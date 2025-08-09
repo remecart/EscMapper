@@ -195,7 +195,6 @@ public class MapProperties : MonoBehaviour
         }
 
         UndoRedoManager.instance.ClearEntries();
-        ZoneEditor.instance.DeleteZones();
         Parser.LoadPrisonData(path, properties);
         LoadUIFromProperties();
         TextureManagement.instance.ReloadTextures();

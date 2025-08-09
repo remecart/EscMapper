@@ -42,9 +42,13 @@ public class ZoneEditor : MonoBehaviour
         {
             if (Zone.gameObject.name != "Bg") Destroy(Zone.gameObject);
         }
+
+        availableNames = ZoneNames;
     }
     public void LoadZones()
     {
+        DeleteZones();
+        
         var zonesData = MapProperties.instance.properties.Zones;
         var zoneCategories = typeof(Zones).GetFields();
 
@@ -77,7 +81,8 @@ public class ZoneEditor : MonoBehaviour
                 zoneGO.GetComponent<SpriteRenderer>().color = GetColor(categoryName);
             }
         }
-
+        
+        ZoneParent.gameObject.SetActive(false);
         RefreshAvailableZones();
     }
     
@@ -207,6 +212,7 @@ public class ZoneEditor : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             RaycastHit2D[] hits = Physics2D.RaycastAll(mouseWorld, Vector2.zero);
+            bool hitZone = false;
 
             foreach (var hit in hits)
             {
@@ -214,14 +220,16 @@ public class ZoneEditor : MonoBehaviour
                 {
                     SelectZone(hit.collider.gameObject);
                     offset = selectedZone.transform.position - mousePos;
-                    break; 
+                    hitZone = true;
+                    break;
                 }
-                else
-                {
-                    DeselectZone();
-                    startPos = mousePos;
-                    isDragging = true;
-                }
+            }
+
+            if (!hitZone)
+            {
+                DeselectZone();
+                startPos = mousePos;
+                isDragging = true;
             }
         }
 

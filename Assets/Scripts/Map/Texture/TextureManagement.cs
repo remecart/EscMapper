@@ -8,6 +8,7 @@ using ThreeDISevenZeroR.UnityGifDecoder;
 using TMPro;
 using UnityEngine.Tilemaps;
 using System.Diagnostics;
+using SFB;
 using Debug = UnityEngine.Debug;
 
 public class TextureManagement : MonoBehaviour
@@ -69,6 +70,9 @@ public class TextureManagement : MonoBehaviour
         string fileName = "GroundHelper.png";
         string filePath = Path.Combine(FolderPath.instance.Config.sourceFolderPath, "Data", "images", "custom", fileName);
         File.WriteAllBytes(filePath, finalTexture.EncodeToPNG());
+
+        Process.Start("explorer.exe", filePath.Replace(fileName, ""));
+
     }
     
 

@@ -6,9 +6,7 @@ using System.IO;
 using System.Linq;
 using ThreeDISevenZeroR.UnityGifDecoder;
 using TMPro;
-using UnityEngine.Tilemaps;
 using System.Diagnostics;
-using SFB;
 using Debug = UnityEngine.Debug;
 
 public class TextureManagement : MonoBehaviour
@@ -22,7 +20,6 @@ public class TextureManagement : MonoBehaviour
 
     public TMP_Dropdown grounds;
     
-    // Start is called before the first frame update
     void Start()
     {
         instance = this;
@@ -173,15 +170,13 @@ public class TextureManagement : MonoBehaviour
 
     public Texture2D CropGroundTexture(Texture2D sourceTexture, int cropWidth, int cropHeight)
     {
-        // Ensure the crop area fits within the source texture
         if (sourceTexture.width < cropWidth || sourceTexture.height < cropHeight)
         {
             Debug.LogWarning(
                 $"[WARNING] TextureManagement.cs - Source texture too small to crop ({sourceTexture.width}x{sourceTexture.height} < {cropWidth}x{cropHeight})");
-            return sourceTexture; // Or return missingTile if you prefer a placeholder
+            return sourceTexture;
         }
-
-        // Crop from top-left corner (Unity's origin is bottom-left, so we offset Y)
+        
         int startX = 0;
         int startY = sourceTexture.height - cropHeight;
 
@@ -258,8 +253,7 @@ public class TextureManagement : MonoBehaviour
             }
         }
     }
-
-    // Split all the tilesets up into individual tile textures
+    
     private void SpitTextureToTiles(Texture2D texture)
     {
         texture.EncodeToPNG();
@@ -322,7 +316,6 @@ public class TextureManagement : MonoBehaviour
         return missingTile;
     }
 
-    // Code for loading a seperate object texture, although its probably not needed
     public void LoadObjectTexture()
     {
         var path = ""; // FolderPath.instance.path + "\\textures\\objects.png";

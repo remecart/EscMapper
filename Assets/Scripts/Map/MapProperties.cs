@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Resources;
 using System.Security.Cryptography;
 using System.Text;
@@ -97,7 +98,7 @@ public class MapProperties : MonoBehaviour
 
         for (int i = 0; i < toggles.Count && i < jobSetters.Length; i++)
         {
-            int index = i; // capture index to avoid closure issues
+            int index = i;
             toggles[index].onValueChanged.AddListener(isOn => { jobSetters[index](isOn); });
         }
     }
@@ -135,14 +136,27 @@ public class MapProperties : MonoBehaviour
 
     public void CreateNewMap()
     {
-        properties = defaultProperties;
+        properties = new Properties();
+        properties = defaultProperties.Clone();
         properties.Info.MapName = mapName.text;
+        properties.Info.Floor = "perks";
+        
+        foreach (GameObject layer in ObjectEditor.instance.ObjectLayers)
+        {
+            foreach (Transform child in layer.transform)
+            {
+                Destroy(child.gameObject);
+            }
+        }
         
         UndoRedoManager.instance.ClearEntries();
         LoadUIFromProperties();
+        TileEditor.instance.ClearTiles();
         TextureManagement.instance.ReloadTextures();
         PropertiesUI();
         PerimeterVisualizer.instance.Visualize();
+        
+        
         loaded = true;
     }
 
@@ -160,7 +174,7 @@ public class MapProperties : MonoBehaviour
             new ExtensionFilter("Custom Map Files", "cmap")
         };
         
-        var documentsPath = $"{Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)}\\The Escapists\\Custom Maps\\";
+        var documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "The Escapists", "Custom Maps");
 
         if (!Directory.Exists(documentsPath)) documentsPath = "";
         
@@ -192,7 +206,7 @@ public class MapProperties : MonoBehaviour
 
     public void SaveMap()
     {
-        var documentsPath = $"{Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)}\\The Escapists\\Custom Maps\\";
+        var documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "The Escapists", "Custom Maps");
         if (!Directory.Exists(documentsPath)) documentsPath = "";
         var path = StandaloneFileBrowser.SaveFilePanel("Save Project", documentsPath, properties.Info.MapName, "proj");
         
@@ -204,7 +218,7 @@ public class MapProperties : MonoBehaviour
     
     public void ExportMap()
     {
-        var documentsPath = $"{Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)}\\The Escapists\\Custom Maps\\";
+        var documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "The Escapists", "Custom Maps");
         if (!Directory.Exists(documentsPath)) documentsPath = "";
         var path = StandaloneFileBrowser.SaveFilePanel("Save Project", documentsPath, properties.Info.MapName, "cmap");
         
@@ -613,6 +627,19 @@ public class Properties
 
     public List<Objects> Objects;
     public List<Tiles> Tiles;
+    
+    public Properties Clone()
+    {
+        return new Properties
+        {
+            Jobs = new Jobs { /* copy fields */ },
+            Info = new Info { /* copy fields */ },
+            Zones = new Zones { /* copy fields */ },
+            Perim = new Perim { /* copy fields */ },
+            Objects = new List<Objects>(Objects.Select(o => o.Clone())),
+            Tiles = new List<Tiles>(Tiles.Select(t => t.Clone()))
+        };
+    }
 }
 
 [System.Serializable]
@@ -629,6 +656,24 @@ public class Jobs
     public bool Mailman;
     public bool Library;
     public string StartingJob;
+    
+    public Jobs Clone()
+    {
+        return new Jobs
+        {
+            Laundry = this.Laundry,
+            Gardening = this.Gardening,
+            Janitor = this.Janitor,
+            Woodshop = this.Woodshop,
+            Metalshop = this.Metalshop,
+            Kitchen = this.Kitchen,
+            Deliveries = this.Deliveries,
+            Tailor = this.Tailor,
+            Mailman = this.Mailman,
+            Library = this.Library,
+            StartingJob = this.StartingJob
+        };
+    }
 }
 
 [System.Serializable]
@@ -648,6 +693,27 @@ public class Info
     public string MapType;
     public string RoutineSet;
     public int NPClvl;
+    
+    public Info Clone()
+    {
+        return new Info
+        {
+            Custom = this.Custom,
+            Rdy = this.Rdy,
+            Version = this.Version,
+            MapName = this.MapName,
+            Intro = this.Intro,
+            Warden = this.Warden,
+            Guards = this.Guards,
+            Inmates = this.Inmates,
+            Tileset = this.Tileset,
+            Floor = this.Floor,
+            Music = this.Music,
+            MapType = this.MapType,
+            RoutineSet = this.RoutineSet,
+            NPClvl = this.NPClvl
+        };
+    }
 }
 
 [System.Serializable]
@@ -683,6 +749,43 @@ public class Zones
     public List<Zone> Safe1;
     public List<Zone> Safe2;
     public List<Zone> Safe3;
+    
+    public Zones Clone()
+    {
+        return new Zones
+        {
+            Rollcall = this.Rollcall?.Select(z => z.Clone()).ToList(),
+            Canteen = this.Canteen?.Select(z => z.Clone()).ToList(),
+            Gym = this.Gym?.Select(z => z.Clone()).ToList(),
+            Showers = this.Showers?.Select(z => z.Clone()).ToList(),
+
+            YourCell = this.YourCell?.Select(z => z.Clone()).ToList(),
+            SHU = this.SHU?.Select(z => z.Clone()).ToList(),
+            Cells1 = this.Cells1?.Select(z => z.Clone()).ToList(),
+            Cells2 = this.Cells2?.Select(z => z.Clone()).ToList(),
+            Cells3 = this.Cells3?.Select(z => z.Clone()).ToList(),
+            Cells4 = this.Cells4?.Select(z => z.Clone()).ToList(),
+            Cells5 = this.Cells5?.Select(z => z.Clone()).ToList(),
+            Cells6 = this.Cells6?.Select(z => z.Clone()).ToList(),
+            Cells7 = this.Cells7?.Select(z => z.Clone()).ToList(),
+            Cells8 = this.Cells8?.Select(z => z.Clone()).ToList(),
+            Cells9 = this.Cells9?.Select(z => z.Clone()).ToList(),
+            Cells10 = this.Cells10?.Select(z => z.Clone()).ToList(),
+
+            Laundry = this.Laundry?.Select(z => z.Clone()).ToList(),
+            Gardening = this.Gardening?.Select(z => z.Clone()).ToList(),
+            Janitor = this.Janitor?.Select(z => z.Clone()).ToList(),
+            Woodshop = this.Woodshop?.Select(z => z.Clone()).ToList(),
+            Metalshop = this.Metalshop?.Select(z => z.Clone()).ToList(),
+            Kitchen = this.Kitchen?.Select(z => z.Clone()).ToList(),
+            Deliveries = this.Deliveries?.Select(z => z.Clone()).ToList(),
+            Tailor = this.Tailor?.Select(z => z.Clone()).ToList(),
+
+            Safe1 = this.Safe1?.Select(z => z.Clone()).ToList(),
+            Safe2 = this.Safe2?.Select(z => z.Clone()).ToList(),
+            Safe3 = this.Safe3?.Select(z => z.Clone()).ToList()
+        };
+    }
 }
 
 [System.Serializable]
@@ -690,6 +793,15 @@ public class Zone
 {
     public Vector2 startPos;
     public Vector2 endPos;
+    
+    public Zone Clone()
+    {
+        return new Zone
+        {
+            startPos = this.startPos,
+            endPos = this.endPos
+        };
+    }
 }
 
 [System.Serializable]
@@ -699,6 +811,17 @@ public class Perim
     public int Bottom;
     public int Left;
     public int Right;
+    
+    public Perim Clone()
+    {
+        return new Perim
+        {
+            Top = this.Top,
+            Bottom = this.Bottom,
+            Left = this.Left,
+            Right = this.Right
+        };
+    }
 }
 
 [System.Serializable]
@@ -706,6 +829,15 @@ public class MapData
 {
     public List<Tiles> tiles;
     public List<Objects> objects;
+    
+    public MapData Clone()
+    {
+        return new MapData
+        {
+            tiles = this.tiles?.Select(t => t.Clone()).ToList(),
+            objects = this.objects?.Select(o => o.Clone()).ToList()
+        };
+    }
 }
 
 [System.Serializable]
@@ -714,6 +846,16 @@ public class Tiles
     [FormerlySerializedAs("id")] public int Id;
     [FormerlySerializedAs("pos")] public Vector2Int Position;
     [FormerlySerializedAs("layer")] public int Layer;
+    
+    public Tiles Clone()
+    {
+        return new Tiles
+        {
+            Id = this.Id,
+            Position = this.Position,
+            Layer = this.Layer
+        };
+    }
 }
 
 [System.Serializable]
@@ -722,4 +864,14 @@ public class Objects
     [FormerlySerializedAs("id")] public int Id;
     [FormerlySerializedAs("pos")] public Vector2 Position;
     [FormerlySerializedAs("layer")] public int Layer;
+    
+    public Objects Clone()
+    {
+        return new Objects
+        {
+            Id = this.Id,
+            Position = this.Position,
+            Layer = this.Layer
+        };
+    }
 }

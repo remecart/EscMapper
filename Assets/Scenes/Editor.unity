@@ -2979,7 +2979,7 @@ GameObject:
   - component: {fileID: 106367700}
   m_Layer: 5
   m_Name: Sink
-  m_TagString: Untagged
+  m_TagString: Hoverable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6595,7 +6595,7 @@ GameObject:
   - component: {fileID: 245713542}
   m_Layer: 5
   m_Name: Book case
-  m_TagString: Untagged
+  m_TagString: Hoverable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -16275,7 +16275,7 @@ GameObject:
   - component: {fileID: 570601940}
   m_Layer: 5
   m_Name: Sun Lounger
-  m_TagString: Untagged
+  m_TagString: Hoverable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -19259,7 +19259,7 @@ GameObject:
   - component: {fileID: 699937782}
   m_Layer: 5
   m_Name: Vent Cover
-  m_TagString: Untagged
+  m_TagString: Hoverable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -19487,19 +19487,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 704143348}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1507096623}
-        m_TargetAssemblyTypeName: MapProperties, Assembly-CSharp
-        m_MethodName: ToggleNewMapUI
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &704143347
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19517,14 +19505,14 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1507096622}
-          m_TargetAssemblyTypeName: MapManager, Assembly-CSharp
-          m_MethodName: SaveLevel
+        - m_Target: {fileID: 1507096623}
+          m_TargetAssemblyTypeName: MapProperties, Assembly-CSharp
+          m_MethodName: ToggleNewMapUI
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
             m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 1
+            m_IntArgument: 0
             m_FloatArgument: 0
             m_StringArgument: 
             m_BoolArgument: 0
@@ -19744,7 +19732,7 @@ GameObject:
   - component: {fileID: 712853111}
   m_Layer: 5
   m_Name: Payphone
-  m_TagString: Untagged
+  m_TagString: Hoverable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -21639,7 +21627,7 @@ GameObject:
   - component: {fileID: 755791719}
   m_Layer: 5
   m_Name: Visitation - Chair for visitors
-  m_TagString: Untagged
+  m_TagString: Hoverable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -23292,7 +23280,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 149
+  m_SortingOrder: 199
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 0.1509434, g: 0.1509434, b: 0.1509434, a: 0.78431374}
   m_FlipX: 0
@@ -23481,7 +23469,7 @@ GameObject:
   - component: {fileID: 807704384}
   m_Layer: 5
   m_Name: Visitation - Chair for Inmate
-  m_TagString: Untagged
+  m_TagString: Hoverable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -23641,8 +23629,8 @@ GameObject:
   - component: {fileID: 821191735}
   - component: {fileID: 821191739}
   m_Layer: 5
-  m_Name: Ladder Down
-  m_TagString: Untagged
+  m_Name: Ladder Up
+  m_TagString: Hoverable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -31757,7 +31745,7 @@ GameObject:
   - component: {fileID: 1054196671}
   m_Layer: 5
   m_Name: Horizontal Vent Slat
-  m_TagString: Untagged
+  m_TagString: Hoverable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -34929,7 +34917,7 @@ GameObject:
   - component: {fileID: 1125793381}
   m_Layer: 5
   m_Name: Cutlery tray
-  m_TagString: Untagged
+  m_TagString: Hoverable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -38218,7 +38206,7 @@ GameObject:
   - component: {fileID: 1236437065}
   m_Layer: 5
   m_Name: Prisoner Stash
-  m_TagString: Untagged
+  m_TagString: Hoverable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -44417,7 +44405,7 @@ GameObject:
   - component: {fileID: 1444565030}
   m_Layer: 5
   m_Name: Vertical Vent Slat
-  m_TagString: Untagged
+  m_TagString: Hoverable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -44578,7 +44566,7 @@ GameObject:
   - component: {fileID: 1447697291}
   m_Layer: 5
   m_Name: Infirmary Bed
-  m_TagString: Untagged
+  m_TagString: Hoverable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -45020,7 +45008,7 @@ GameObject:
   - component: {fileID: 1472375332}
   m_Layer: 5
   m_Name: Medical Supplies
-  m_TagString: Untagged
+  m_TagString: Hoverable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -46311,14 +46299,14 @@ MonoBehaviour:
   m_VerticalScrollbarEventHandler: {fileID: 0}
   m_LayoutGroup: {fileID: 0}
   m_ScrollSensitivity: 1
-  m_ContentType: 4
+  m_ContentType: 0
   m_InputType: 0
   m_AsteriskChar: 42
-  m_KeyboardType: 1
+  m_KeyboardType: 0
   m_LineType: 0
   m_HideMobileInput: 0
   m_HideSoftKeyboard: 0
-  m_CharacterValidation: 4
+  m_CharacterValidation: 0
   m_RegexValue: 
   m_GlobalPointSize: 16
   m_CharacterLimit: 0
@@ -50247,7 +50235,7 @@ GameObject:
   - component: {fileID: 1625958859}
   m_Layer: 5
   m_Name: Canteen Food
-  m_TagString: Untagged
+  m_TagString: Hoverable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -52267,7 +52255,7 @@ GameObject:
   - component: {fileID: 1693272208}
   m_Layer: 5
   m_Name: Light Source
-  m_TagString: Untagged
+  m_TagString: Hoverable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -53361,7 +53349,7 @@ GameObject:
   - component: {fileID: 1716978454}
   m_Layer: 5
   m_Name: Chair
-  m_TagString: Untagged
+  m_TagString: Hoverable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -57730,8 +57718,8 @@ GameObject:
   - component: {fileID: 1843333471}
   - component: {fileID: 1843333475}
   m_Layer: 5
-  m_Name: Ladder Up
-  m_TagString: Untagged
+  m_Name: Ladder Down
+  m_TagString: Hoverable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -58632,7 +58620,7 @@ GameObject:
   - component: {fileID: 1890772592}
   m_Layer: 5
   m_Name: Internet Terminal
-  m_TagString: Untagged
+  m_TagString: Hoverable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -59688,7 +59676,7 @@ GameObject:
   - component: {fileID: 1929927970}
   m_Layer: 5
   m_Name: Solitary Bed
-  m_TagString: Untagged
+  m_TagString: Hoverable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -61079,7 +61067,7 @@ GameObject:
   - component: {fileID: 1949119250}
   m_Layer: 5
   m_Name: Table
-  m_TagString: Untagged
+  m_TagString: Hoverable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -65808,7 +65796,7 @@ GameObject:
   - component: {fileID: 2101816460}
   m_Layer: 5
   m_Name: Cabinet
-  m_TagString: Untagged
+  m_TagString: Hoverable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

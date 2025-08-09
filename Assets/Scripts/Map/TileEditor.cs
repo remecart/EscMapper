@@ -325,7 +325,10 @@ public class TileEditor : MonoBehaviour
                     tilemap.SetTile(new Vector3Int(x, -y, 0), null);
                 }
             }
-            tilemap.transform.parent.gameObject.SetActive(false);
+            if (!tilemap.transform.parent.gameObject.name.Contains("Ground"))
+            {
+                tilemap.transform.parent.gameObject.SetActive(false);
+            }
         }
         
         currentTilemap[1].gameObject.SetActive(true);

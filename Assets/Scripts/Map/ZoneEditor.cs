@@ -33,14 +33,14 @@ public class ZoneEditor : MonoBehaviour
     {
         instance = this;
         RefreshAvailableZones();
-        InvokeRepeating(nameof(SaveZones), 1f, 1f); // Start after 1s, repeat every 1s
+        InvokeRepeating(nameof(SaveZones), 1f, 1f);
     }
 
     public void DeleteZones()
     {
         foreach (Transform Zone in ZoneParent.transform)
         {
-            Destroy(Zone.gameObject);
+            if (Zone.gameObject.name != "Bg") Destroy(Zone.gameObject);
         }
     }
     public void LoadZones()
@@ -214,7 +214,7 @@ public class ZoneEditor : MonoBehaviour
                 {
                     SelectZone(hit.collider.gameObject);
                     offset = selectedZone.transform.position - mousePos;
-                    break; // Stop after selecting the first valid zone
+                    break; 
                 }
                 else
                 {

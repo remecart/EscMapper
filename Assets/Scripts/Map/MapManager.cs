@@ -14,7 +14,7 @@ public class MapManager : MonoBehaviour
     public List<GameObject> Layers;
 
     public TextMeshProUGUI text;
-    
+
     // Start is called before the first frame update
     void Start()
     {
@@ -27,7 +27,7 @@ public class MapManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.DownArrow)) ChangeLayer(-1);
         if (Input.GetKeyDown(KeyCode.UpArrow)) ChangeLayer(1);
     }
-    
+
     public void ChangeLayer(int change)
     {
         if (MapProperties.instance.IsEmpty())
@@ -38,19 +38,19 @@ public class MapManager : MonoBehaviour
         if (currentLayer != Mathf.Clamp(currentLayer + change, 0, 4))
         {
             currentLayer = Mathf.Clamp(currentLayer + change, 0, 4);
-                
+
             foreach (var layer in Layers)
             {
                 layer.gameObject.SetActive(false);
             }
-            
+
             Layers[currentLayer].SetActive(true);
             if (currentLayer > 1) Layers[1].SetActive(true);
 
             text.text = Layers[currentLayer].name;
         }
     }
-    
+
     public void ReloadCustomTiles()
     {
         for (int i = 0; i < TextureManagement.instance.loadedTiles.Count + 1; i++)
@@ -62,22 +62,22 @@ public class MapManager : MonoBehaviour
         }
 
         LoadLevel();
-        currentLayer = 0;
-        ChangeLayer(1);
     }
 
     public void SaveLevel()
     {
         MapProperties.instance.properties.Tiles.Clear();
         MapProperties.instance.properties.Objects.Clear();
-        
+
         for (var i = 0; i < TileEditor.instance.currentTilemap.Count; i++)
         {
             var tilemap = TileEditor.instance.currentTilemap[i];
             BoundsInt bounds = tilemap.cellBounds;
-            
-            for (var x = bounds.min.x; x < bounds.max.x; x++) {
-                for (var y = bounds.min.y; y < bounds.max.y; y++) {
+
+            for (var x = bounds.min.x; x < bounds.max.x; x++)
+            {
+                for (var y = bounds.min.y; y < bounds.max.y; y++)
+                {
                     var customTile = tilemap.GetTile(new Vector3Int(x, y, 0)) as CustomTile;
                     if (!customTile) continue;
                     var entry = new Tiles
@@ -100,7 +100,8 @@ public class MapManager : MonoBehaviour
                 var entry = new Objects()
                 {
                     Id = obj.id,
-                    Position = new Vector3(go.transform.position.x - obj.offset.x - 0.5f, -(go.transform.position.y - obj.offset.y - 0.5f)),
+                    Position = new Vector3(go.transform.position.x - obj.offset.x - 0.5f,
+                        -(go.transform.position.y - obj.offset.y - 0.5f)),
                     Layer = i
                 };
                 MapProperties.instance.properties.Objects.Add(entry);
@@ -112,35 +113,44 @@ public class MapManager : MonoBehaviour
 
     public void LoadLevel()
     {
-        foreach (var tile in MapProperties.instance.properties.Tiles)
+        if (MapProperties.instance.properties.Tiles != null)
         {
-            if (tile.Layer < 0 || tile.Layer >= TileEditor.instance.currentTilemap.Count)
+            foreach (var tile in MapProperties.instance.properties.Tiles)
             {
-                Debug.LogWarning($"[WARNING] MapManager.cs - Invalid layer of value {tile.Layer} discovered => Tile not loaded!");
-                continue;
-            }
+                if (tile.Layer < 0 || tile.Layer >= TileEditor.instance.currentTilemap.Count)
+                {
+                    Debug.LogWarning(
+                        $"[WARNING] MapManager.cs - Invalid layer of value {tile.Layer} discovered => Tile not loaded!");
+                    continue;
+                }
 
-            if (tile.Id < 0 || tile.Id >= tiles.Count)
-            {
-                Debug.LogWarning($"[WARNING] MapManager.cs - Invalid ID of value {tile.Id} discovered => Tile not loaded!");
-                continue;
+                if (tile.Id < 0 || tile.Id >= tiles.Count)
+                {
+                    Debug.LogWarning(
+                        $"[WARNING] MapManager.cs - Invalid ID of value {tile.Id} discovered => Tile not loaded!");
+                    continue;
+                }
+
+                TileEditor.instance.currentTilemap[tile.Layer].SetTile((Vector3Int)tile.Position, tiles[tile.Id]);
             }
-            
-            TileEditor.instance.currentTilemap[tile.Layer].SetTile((Vector3Int)tile.Position, tiles[tile.Id]);
         }
-        
-        foreach (var obj in MapProperties.instance.properties.Objects)
+
+        if (MapProperties.instance.properties.Objects != null)
         {
-            if (obj.Id < ObjectLookupTable.instance.objects.Count)
+            foreach (var obj in MapProperties.instance.properties.Objects)
             {
-                GameObject go = Instantiate(ObjectLookupTable.instance.objects[obj.Id]);
-                go.transform.SetParent(ObjectEditor.instance.ObjectLayers[obj.Layer].transform);
-                var co = go.GetComponent<CustomObject>();
-                go.GetComponent<SpriteRenderer>().sortingOrder = obj.Layer * 50 + 25;
-                go.transform.position = new Vector3(obj.Position.x + co.offset.x + 0.5f, -(obj.Position.y - co.offset.y - 0.5f), 0);
+                if (obj.Id < ObjectLookupTable.instance.objects.Count)
+                {
+                    GameObject go = Instantiate(ObjectLookupTable.instance.objects[obj.Id]);
+                    go.transform.SetParent(ObjectEditor.instance.ObjectLayers[obj.Layer].transform);
+                    var co = go.GetComponent<CustomObject>();
+                    go.GetComponent<SpriteRenderer>().sortingOrder = obj.Layer * 50 + 25;
+                    go.transform.position = new Vector3(obj.Position.x + co.offset.x + 0.5f,
+                        -(obj.Position.y - co.offset.y - 0.5f), 0);
+                }
             }
         }
-        
+
         ZoneEditor.instance.LoadZones();
     }
 }
@@ -159,12 +169,12 @@ public class LevelManagerInspectorButton : Editor
         {
             script.ReloadCustomTiles();
         }
-        
+
         if (GUILayout.Button("Save Prison"))
         {
             script.SaveLevel();
         }
-        
+
         if (GUILayout.Button("Load Prison"))
         {
             script.LoadLevel();
@@ -172,5 +182,3 @@ public class LevelManagerInspectorButton : Editor
     }
 }
 #endif
-
-

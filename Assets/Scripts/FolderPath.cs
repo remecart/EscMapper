@@ -21,17 +21,28 @@ public class FolderPath : MonoBehaviour
     {
         DontDestroyOnLoad(this);
         instance = this;
-        
-        var documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-        var path = $"{documentsPath}\\EscMapper\\config.json";
-        
-        if (File.Exists(path))
+
+        // Use Path.Combine for cross-platform compatibility
+        string configPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "EscMapper", "config.json");
+
+        if (File.Exists(configPath))
         {
-            var raw = System.IO.File.ReadAllText(path);
+            string raw = File.ReadAllText(configPath);
             Config = JsonUtility.FromJson<Config>(raw);
-            path = Config.sourceFolderPath;
+
+            // Check if the directory exists
+            if (Config == null)
+            {
+                UI.gameObject.SetActive(true);
+                return;
+            }
             
-            if (!Directory.Exists(path)) UI.gameObject.SetActive(true);
+            string sourceFolderPath = Config.sourceFolderPath;
+            
+            if (!Directory.Exists(sourceFolderPath))
+            {
+                UI.gameObject.SetActive(true);
+            }
         }
         else
         {
@@ -80,9 +91,9 @@ public class FolderPath : MonoBehaviour
     private void OnDestroy()
     {
         var documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-        var path = $"{documentsPath}\\EscMapper\\config.json";
-        Directory.CreateDirectory($"{documentsPath}\\EscMapper");
-        System.IO.File.WriteAllText(path, JsonUtility.ToJson(Config));
+        string savepath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "EscMapper", "config.json");
+        Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "EscMapper"));
+        File.WriteAllText(savepath, JsonUtility.ToJson(Config));
     }
 }
 

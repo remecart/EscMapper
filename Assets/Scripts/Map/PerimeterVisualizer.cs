@@ -81,26 +81,21 @@ public class PerimeterVisualizer : MonoBehaviour
         var perim = MapProperties.instance.properties.Perim;
 
         if (perim == null) return;
-
-        // If any perimeter value is 0, treat it as unset and default to 0
+        
         int top = perim.Top != null ? perim.Top : 0;
         int bottom = perim.Bottom != null ? perim.Bottom : 0;
         int right = perim.Right != null ? perim.Right : 0;
         int left = perim.Left != null ? perim.Left : 0;
-
-        // Clamp Top: Y between 501 - 108 and 501
+        
         float topY = Mathf.Clamp(502 - top, 501 - 108, 501);
         perimeters[0].transform.position = new Vector3(50, topY, 0);
-
-        // Clamp Bottom: Y between -607 and -607 + 108
+        
         float bottomY = Mathf.Clamp(-606 + bottom, -607, -607 + 108);
         perimeters[1].transform.position = new Vector3(50, bottomY, 0);
-
-        // Clamp Right: X between 608 - 108 and 608
+        
         float rightX = Mathf.Clamp(608 - right, 608 - 108, 608);
         perimeters[2].transform.position = new Vector3(rightX, -54, 0);
 
-        // Clamp Left: X between -500 and -500 + 108
         float leftX = Mathf.Clamp(-500 + left, -500, -500 + 108);
         perimeters[3].transform.position = new Vector3(leftX, -54, 0);
     }

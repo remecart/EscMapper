@@ -80,8 +80,8 @@ public class FolderPath : MonoBehaviour
     private void OnDestroy()
     {
         var documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-        var path = $"{documentsPath}\\EscEdit\\config.json";
-        Directory.CreateDirectory($"{documentsPath}\\EscEdit");
+        var path = $"{documentsPath}\\EscMapper\\config.json";
+        Directory.CreateDirectory($"{documentsPath}\\EscMapper");
         System.IO.File.WriteAllText(path, JsonUtility.ToJson(Config));
     }
 }

@@ -78,7 +78,7 @@ public class ObjectEditor : MonoBehaviour
         if (_clickedOnUI) return;
         if (Input.GetKey(KeyCode.LeftControl)) return;
 
-        if (Input.GetMouseButtonDown(2))
+        if (Input.GetMouseButtonDown(2) && Input.GetKey(KeyCode.LeftControl))
         {
             GetObject();
         }

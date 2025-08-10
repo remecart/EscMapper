@@ -146,7 +146,7 @@ public class TileEditor : MonoBehaviour
             copiedIds = new();
         }
         
-        if (Input.GetMouseButtonDown(2))
+        if (Input.GetMouseButtonDown(2) && Input.GetKey(KeyCode.LeftControl))
         {
             var tile = currentTilemap[currentTilemapLayer].GetTile(mousePos) as CustomTile;
             if (tile != null)

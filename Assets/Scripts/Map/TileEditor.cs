@@ -107,27 +107,6 @@ public class TileEditor : MonoBehaviour
         
             if (startAreaPos == new Vector3Int()) areaPreview.transform.localScale = new Vector3(0, 0, 0);
         }
-
-        if (!placementMode) return;
-
-        if (!Input.GetKey(KeyCode.LeftControl))
-        {
-            if (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonDown(0))
-            {
-                startAreaPos = mousePos;
-            }
-            else if (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonUp(0) && startAreaPos != new Vector3Int())
-            {
-                AreaPlaceTile(false);
-            }
-            else if (!Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButton(0))
-            {
-                PlaceTile(false);
-            }
-
-            if (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButton(0)) PreviewArea.instance.AreaPreview(placeColor, startAreaPos);
-
-        }
         
         if (Input.GetKey(KeyCode.LeftControl))
         {
@@ -162,6 +141,27 @@ public class TileEditor : MonoBehaviour
             startCopyPos = new();
             endCopyPos = new();
             copiedIds = new();
+        }
+
+        if (!placementMode) return;
+
+        if (!Input.GetKey(KeyCode.LeftControl))
+        {
+            if (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonDown(0))
+            {
+                startAreaPos = mousePos;
+            }
+            else if (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonUp(0) && startAreaPos != new Vector3Int())
+            {
+                AreaPlaceTile(false);
+            }
+            else if (!Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButton(0))
+            {
+                PlaceTile(false);
+            }
+
+            if (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButton(0)) PreviewArea.instance.AreaPreview(placeColor, startAreaPos);
+
         }
     }
     

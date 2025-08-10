@@ -76,6 +76,7 @@ public class ObjectEditor : MonoBehaviour
         if (Input.GetKey(KeyCode.Tab)) return;
         if (PreventPlaceBehindGUI.instance.behindUI) return;
         if (_clickedOnUI) return;
+        if (Input.GetKey(KeyCode.LeftControl)) return;
         
         if (Input.GetMouseButton(1))
         {

@@ -56,8 +56,13 @@ public class Previewtile : MonoBehaviour
             var co = ObjectLookupTable.instance.objects[ObjectEditor.instance.selectedObjectIndex].GetComponent<CustomObject>();
             var texture = TextureManagement.instance.ReturnObject(TileEditor.instance.selectedTileIndex, co.rect);
             spriteRenderer.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * 0.5f, 16);
+
+            float parsedX, parsedY;
+
+            float.TryParse(ObjectEditor.instance.OffsetX.text, out parsedX);
+            float.TryParse(ObjectEditor.instance.OffsetY.text, out parsedY);
             
-            transform.position = new Vector3(pos.x + co.offset.x + 0.5f, pos.y + co.offset.y + 0.5f, 0);
+            transform.position = new Vector3(pos.x + co.offset.x + 0.5f + parsedX, pos.y + co.offset.y + 0.5f + parsedY, 0);
         }
     }
 }

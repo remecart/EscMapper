@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -14,6 +15,9 @@ public class ObjectEditor : MonoBehaviour
     private Vector3Int mousePos =>
         TileEditor.instance.currentTilemap[currentTilemapLayer].WorldToCell(cam.ScreenToWorldPoint(Input.mousePosition));
     public Camera cam;
+    
+    [Range(0.01f, 1f)]
+    public float placementPrecision = 1f; // Default to quarter-tile precision
 
     GameObject currentObject {
         get {
@@ -76,12 +80,13 @@ public class ObjectEditor : MonoBehaviour
         if (Input.GetKey(KeyCode.Tab)) return;
         if (PreventPlaceBehindGUI.instance.behindUI) return;
         if (_clickedOnUI) return;
-        if (Input.GetKey(KeyCode.LeftControl)) return;
-
+        
         if (Input.GetMouseButtonDown(2) && Input.GetKey(KeyCode.LeftControl))
         {
             GetObject();
         }
+        
+        if (Input.GetKey(KeyCode.LeftControl)) return;
         
         if (Input.GetMouseButton(1))
         {
@@ -215,67 +220,57 @@ public class ObjectEditor : MonoBehaviour
     
     void DeleteObject()
     {
-        Vector3 mousePos = cam.ScreenToWorldPoint(Input.mousePosition);
-        Vector3 worldPos = new Vector3(mousePos.x, mousePos.y, 0);
+        Vector2 mouseWorldPos = cam.ScreenToWorldPoint(Input.mousePosition);
+        Collider2D hit = Physics2D.OverlapPoint(mouseWorldPos);
 
-        Transform layer = ObjectLayers[currentTilemapLayer].transform;
-        foreach (Transform child in layer)
+        if (hit != null && hit.TryGetComponent(out CustomObject co))
         {
-            if (Vector3.Distance(child.position, worldPos) < 0.5f)
-            {
-                var co = child.GetComponent<CustomObject>();
-                if (co != null)
-                {
-                    UndoRedoManager.instance.SaveState(new List<UndoEntry> {
-                        new UndoEntry {
-                            isTile = false,
-                            id = co.id,
-                            layer = currentTilemapLayer,
-                            position = child.position
-                        }
-                    });
+            UndoRedoManager.instance.SaveState(new List<UndoEntry> {
+                new UndoEntry {
+                    isTile = false,
+                    id = co.id,
+                    layer = currentTilemapLayer,
+                    position = co.transform.position
                 }
+            });
 
-                Destroy(child.gameObject);
-                break;
-            }
+            Destroy(co.gameObject);
         }
     }
     
     void GetObject()
     {
-        Vector3 mousePos = cam.ScreenToWorldPoint(Input.mousePosition);
-        Vector3 worldPos = new Vector3(mousePos.x, mousePos.y, 0);
+        Vector2 mouseWorldPos = cam.ScreenToWorldPoint(Input.mousePosition);
+        Collider2D hit = Physics2D.OverlapPoint(mouseWorldPos);
 
-        Transform layer = ObjectLayers[currentTilemapLayer].transform;
-        foreach (Transform child in layer)
+        if (hit != null && hit.TryGetComponent(out CustomObject co))
         {
-            if (Vector3.Distance(child.position, worldPos) < 0.5f)
-            {
-                var co = child.GetComponent<CustomObject>();
-                if (co != null)
-                {
-                    selectedObjectIndex = co.id;
-                    TileEditor.instance.placementMode = false;
-                }
-            }
+            selectedObjectIndex = co.id;
+            TileEditor.instance.placementMode = false;
         }
     }
+
+    public TMP_InputField OffsetX;
+    public TMP_InputField OffsetY;
     
     void PlaceObject(Objects obj = null)
     {
         Vector3 worldPos = new Vector3(mousePos.x + 0.5f, mousePos.y + 0.5f, 0);
-        
-        foreach (Transform child in ObjectLayers[currentTilemapLayer].transform)
-        {
-            if (child.transform.position == worldPos) return;
-        }
-        
+        Vector2 checkPos = new Vector2(worldPos.x, worldPos.y);
+
+        float parsedX, parsedY;
+
+        float.TryParse(OffsetX.text, out parsedX);
+        float.TryParse(OffsetY.text, out parsedY);
+
+        if (Physics2D.OverlapPoint(checkPos)) return;
+
         GameObject go = Instantiate(currentObject);
         go.transform.SetParent(ObjectLayers[currentTilemapLayer].transform);
 
         var co = go.GetComponent<CustomObject>();
-        go.transform.position = new Vector3(mousePos.x + co.offset.x + 0.5f, mousePos.y + co.offset.y + 0.5f, 0);
+        Vector3 finalPos = new Vector3(mousePos.x + co.offset.x + 0.5f + parsedX, mousePos.y + co.offset.y + 0.5f + parsedY, 0);
+        go.transform.position = finalPos;
         go.GetComponent<SpriteRenderer>().sortingOrder = currentTilemapLayer * 50 + 25;
 
         UndoRedoManager.instance.SaveState(new List<UndoEntry> {
@@ -283,7 +278,7 @@ public class ObjectEditor : MonoBehaviour
                 isTile = false,
                 id = co.id,
                 layer = currentTilemapLayer,
-                position = go.transform.position
+                position = finalPos
             }
         });
     }

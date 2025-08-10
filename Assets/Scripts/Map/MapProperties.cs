@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Resources;
@@ -345,7 +346,7 @@ public class Parser
             {
                 var obj = properties.Objects[i];
                 var layer = obj.Layer == 0 ? 4 : obj.Layer;
-                sb.AppendLine($"{i + 1}={obj.Position.x}x{obj.Position.y}x{obj.Id}x{layer}");
+                sb.AppendLine($"{i + 1}={obj.Position.x.ToString(CultureInfo.InvariantCulture)}x{obj.Position.y.ToString(CultureInfo.InvariantCulture)}x{obj.Id}x{layer}");
             }
 
             sb.AppendLine();

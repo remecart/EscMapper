@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -86,6 +87,8 @@ public class TileEditor : MonoBehaviour
             return;
         }
 
+        
+
         if (!Input.GetKey(KeyCode.LeftControl))
         {
             if (!Input.GetKey(KeyCode.LeftShift)) startAreaPos = new Vector3Int();
@@ -141,6 +144,16 @@ public class TileEditor : MonoBehaviour
             startCopyPos = new();
             endCopyPos = new();
             copiedIds = new();
+        }
+        
+        if (Input.GetMouseButtonDown(2))
+        {
+            var tile = currentTilemap[currentTilemapLayer].GetTile(mousePos) as CustomTile;
+            if (tile != null)
+            {
+                selectedTileIndex = tile.id;
+                placementMode = true;
+            }
         }
 
         if (!placementMode) return;

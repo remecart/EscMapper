@@ -77,6 +77,11 @@ public class ObjectEditor : MonoBehaviour
         if (PreventPlaceBehindGUI.instance.behindUI) return;
         if (_clickedOnUI) return;
         if (Input.GetKey(KeyCode.LeftControl)) return;
+
+        if (Input.GetMouseButtonDown(2))
+        {
+            GetObject();
+        }
         
         if (Input.GetMouseButton(1))
         {
@@ -233,6 +238,26 @@ public class ObjectEditor : MonoBehaviour
 
                 Destroy(child.gameObject);
                 break;
+            }
+        }
+    }
+    
+    void GetObject()
+    {
+        Vector3 mousePos = cam.ScreenToWorldPoint(Input.mousePosition);
+        Vector3 worldPos = new Vector3(mousePos.x, mousePos.y, 0);
+
+        Transform layer = ObjectLayers[currentTilemapLayer].transform;
+        foreach (Transform child in layer)
+        {
+            if (Vector3.Distance(child.position, worldPos) < 0.5f)
+            {
+                var co = child.GetComponent<CustomObject>();
+                if (co != null)
+                {
+                    selectedObjectIndex = co.id;
+                    TileEditor.instance.placementMode = false;
+                }
             }
         }
     }

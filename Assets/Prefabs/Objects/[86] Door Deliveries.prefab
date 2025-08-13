@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 1696885029300013361}
   m_Layer: 0
   m_Name: '[86] Door Deliveries'
-  m_TagString: Untagged
+  m_TagString: Hoverable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -102,7 +102,7 @@ MonoBehaviour:
   rect:
     serializedVersion: 2
     x: 11
-    y: 8
+    y: 3
     width: 1
     height: 1
   offset: {x: 0, y: 0}

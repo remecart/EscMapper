@@ -34,6 +34,7 @@ public class ZoneEditor : MonoBehaviour
         instance = this;
         RefreshAvailableZones();
         InvokeRepeating(nameof(SaveZones), 1f, 1f);
+        InvokeRepeating(nameof(RefreshAvailableZones), 0.1f, 0.1f);
     }
 
     public void DeleteZones()
@@ -43,7 +44,7 @@ public class ZoneEditor : MonoBehaviour
             if (Zone.gameObject.name != "Bg") Destroy(Zone.gameObject);
         }
 
-        availableNames = ZoneNames;
+        RefreshAvailableZones();
     }
     public void LoadZones()
     {
@@ -170,12 +171,19 @@ public class ZoneEditor : MonoBehaviour
 
         Destroy(selectedZone);
         selectedZone = null;
-        RefreshAvailableZones();
     }
     
     // Update is called once per frame
     void Update()
     {
+        if (MapManager.instance.currentLayer != 4)
+        {
+            dropdown.gameObject.SetActive(false);
+            return;
+        }
+        
+        dropdown.gameObject.SetActive(true);
+        
         if (mousePos.x < 0 || mousePos.x > 107 || mousePos.y > 0 || mousePos.y < -107)
         {
             StopActions();
@@ -187,8 +195,6 @@ public class ZoneEditor : MonoBehaviour
             StopActions();
             return;
         }
-
-        if (MapManager.instance.currentLayer != 4)  return;
         
         if (Input.GetKey(KeyCode.Tab))
         {

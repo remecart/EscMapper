@@ -34,19 +34,36 @@ public class HoverToolboxTMP : MonoBehaviour
             out localPoint
         );
 
-        Vector2 offset = new Vector2(-5f, -15f);
+        Vector2 offset = new Vector2(5f, -15f);
         tooltipRect.anchoredPosition = localPoint + offset;
 
-        GameObject hovered = GetHoveredUIElement();
+        if (tooltipRect.anchoredPosition.x < 0) tooltipRect.pivot = new Vector2(0, -0.2f);
+        else tooltipRect.pivot = new Vector2(1, -0.2f);
+
+        GameObject hovered = GetHoveredUIElement() ?? GetHovered2DWorldObject();
         if (hovered != null && hovered.CompareTag(hoverTag))
         {
-            tooltipText.text = hovered.name;
+            int bracketEnd = hovered.name.IndexOf("]");
+            tooltipText.text = hovered.name.Substring(bracketEnd + 1).Trim().Replace("(Clone)", "");
             tooltipInstance.SetActive(true);
         }
         else
         {
             tooltipInstance.SetActive(false);
         }
+    }
+    
+    GameObject GetHovered2DWorldObject()
+    {
+        Vector2 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        RaycastHit2D hit = Physics2D.Raycast(mouseWorldPos, Vector2.zero);
+
+        if (hit.collider != null && hit.collider.CompareTag(hoverTag))
+        {
+            return hit.collider.gameObject;
+        }
+
+        return null;
     }
 
     GameObject GetHoveredUIElement()

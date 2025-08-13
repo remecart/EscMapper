@@ -128,6 +128,7 @@ public class TextureManagement : MonoBehaviour
         StartCoroutine(LoadUnderground(path));
 
         ReloadObjectTextures.instance.ReloadTextures();
+        TileProperties.instance.GetProperties();
     }
 
     private IEnumerator LoadGround(string tileset, string path)
@@ -142,10 +143,9 @@ public class TextureManagement : MonoBehaviour
         }
 
         var texture = LoadFirstGifFrame(fullPath);
-        
-        var cropped = CropGroundTexture(texture, 1728, 1728);
-        cropped.filterMode = FilterMode.Point;
-        groundTexture.sprite = Sprite.Create(cropped, new Rect(0, 0, cropped.width, cropped.height),
+
+        texture.filterMode = FilterMode.Point;
+        groundTexture.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
             new Vector2(0, 1), 16);
     }
 
@@ -160,35 +160,12 @@ public class TextureManagement : MonoBehaviour
             yield break;
         }
 
-        var texture = LoadFirstGifFrame(fullPath);
-
-        var cropped = CropGroundTexture(texture, 1728, 1728);
-        cropped.filterMode = FilterMode.Point;
+        var texture = LoadFirstGifFrame(fullPath); 
+        texture.filterMode = FilterMode.Point;
         undergroundTexture.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
             new Vector2(0, 1), 16);
     }
-
-    public Texture2D CropGroundTexture(Texture2D sourceTexture, int cropWidth, int cropHeight)
-    {
-        if (sourceTexture.width < cropWidth || sourceTexture.height < cropHeight)
-        {
-            Debug.LogWarning(
-                $"[WARNING] TextureManagement.cs - Source texture too small to crop ({sourceTexture.width}x{sourceTexture.height} < {cropWidth}x{cropHeight})");
-            return sourceTexture;
-        }
-        
-        int startX = 0;
-        int startY = sourceTexture.height - cropHeight;
-
-        Color[] pixels = sourceTexture.GetPixels(startX, startY, cropWidth, cropHeight);
-
-        var croppedTexture = new Texture2D(cropWidth, cropHeight, sourceTexture.format, false);
-        croppedTexture.SetPixels(pixels);
-        croppedTexture.Apply();
-
-        return croppedTexture;
-    }
-
+    
     Texture2D LoadFirstGifFrame(string path)
     {
         using (var stream = new GifStream(File.OpenRead(path)))

@@ -199,6 +199,7 @@ public class MapProperties : MonoBehaviour
         Parser.LoadPrisonData(path, properties);
         LoadUIFromProperties();
         TextureManagement.instance.ReloadTextures();
+        MapManager.instance.LoadLevel();
         PropertiesUI();
         PerimeterVisualizer.instance.Visualize();
         loaded = true;
@@ -556,8 +557,10 @@ public class Parser
                 var values = parts[1].Split('x');
                 if (values.Length != 4) continue;
 
-                float px = float.Parse(values[0]);
-                float py = float.Parse(values[1]);
+
+                float px = float.Parse(values[0], CultureInfo.InvariantCulture);
+                float py = float.Parse(values[1], CultureInfo.InvariantCulture);
+
                 int id = int.Parse(values[2]);
                 int layer = int.Parse(values[3]);
 

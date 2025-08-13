@@ -61,7 +61,7 @@ public class MapManager : MonoBehaviour
             tiles.Add(tile);
         }
 
-        LoadLevel();
+        // LoadLevel();
     }
 
     public void SaveLevel()

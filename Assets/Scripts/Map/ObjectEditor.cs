@@ -216,6 +216,7 @@ public class ObjectEditor : MonoBehaviour
         }
 
         UndoRedoManager.instance.SaveState(entries);
+        RemoveDuplicateObjects();
     }
     
     void DeleteObject()
@@ -236,6 +237,8 @@ public class ObjectEditor : MonoBehaviour
 
             Destroy(co.gameObject);
         }
+        
+        RemoveDuplicateObjects();
     }
     
     void GetObject()
@@ -281,5 +284,51 @@ public class ObjectEditor : MonoBehaviour
                 position = finalPos
             }
         });
+
+        RemoveDuplicateObjects();
+    }
+    
+    public void RemoveDuplicateObjects(float threshold = 0.01f)
+    {
+        foreach (GameObject layerObj in ObjectLayers)
+        {
+            Transform layer = layerObj.transform;
+            List<Transform> toRemove = new List<Transform>();
+
+            for (int i = 0; i < layer.childCount; i++)
+            {
+                Transform a = layer.GetChild(i);
+                if (toRemove.Contains(a)) continue;
+
+                for (int j = i + 1; j < layer.childCount; j++)
+                {
+                    Transform b = layer.GetChild(j);
+                    if (toRemove.Contains(b)) continue;
+
+                    if (Vector3.Distance(a.position, b.position) < threshold)
+                    {
+                        toRemove.Add(b);
+                    }
+                }
+            }
+
+            foreach (Transform dup in toRemove)
+            {
+                var co = dup.GetComponent<CustomObject>();
+                if (co != null)
+                {
+                    UndoRedoManager.instance.SaveState(new List<UndoEntry> {
+                        new UndoEntry {
+                            isTile = false,
+                            id = co.id,
+                            layer = currentTilemapLayer,
+                            position = dup.position
+                        }
+                    });
+                }
+
+                Destroy(dup.gameObject);
+            }
+        }
     }
 }

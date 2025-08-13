@@ -101,8 +101,8 @@ MonoBehaviour:
   id: 64
   rect:
     serializedVersion: 2
-    x: 14
-    y: 8
+    x: 15
+    y: 9
     width: 1
     height: 1
   offset: {x: 0, y: 0}

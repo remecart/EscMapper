@@ -22,8 +22,10 @@ public class UndoRedoManager : MonoBehaviour
 
     public void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Y)) Undo();
-        if (Input.GetKeyDown(KeyCode.Z)) Redo();
+        if (!Input.GetKey(KeyCode.LeftControl)) return;
+        
+        if (Input.inputString.Contains("z")) Undo();
+        if (Input.inputString.Contains("y")) Redo();
         //if (Input.GetKeyDown(KeyCode.Z)) Redo();
     }
 

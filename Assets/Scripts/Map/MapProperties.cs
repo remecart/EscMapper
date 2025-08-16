@@ -6,6 +6,7 @@ using System.Linq;
 using System.Resources;
 using System.Security.Cryptography;
 using System.Text;
+using EscapistsMapTools.Encryption;
 using SFB;
 using TMPro;
 using Unity.VisualScripting;
@@ -172,15 +173,14 @@ public class MapProperties : MonoBehaviour
         var filters = new[]
         {
             new ExtensionFilter("Project Files", "proj"),
-            new ExtensionFilter("Custom Map Files", "cmap")
+            new ExtensionFilter("Custom Map Files", "cmap"),
+            new ExtensionFilter("Official Map Files", "map")
         };
         
         var documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "The Escapists", "Custom Maps");
-
         if (!Directory.Exists(documentsPath)) documentsPath = "";
         
         var path = StandaloneFileBrowser.OpenFilePanel("Select File", documentsPath, filters, false)[0];
-        
         if (!File.Exists(path)) return;
         
         properties = new Properties();
@@ -400,7 +400,24 @@ public class Parser
 
     public static void LoadPrisonData(string filePath, Properties properties)
     {
-        var lines = File.ReadAllLines(filePath);
+        string[] lines = null;
+        
+        if (Path.GetExtension(filePath).Equals(".map", StringComparison.OrdinalIgnoreCase))
+        {
+            byte[] fileBytes;
+            string key = "mothking";
+
+            fileBytes = File.ReadAllBytes(filePath);
+            BlowfishCompat decryptionBlowfish = new BlowfishCompat(key);
+            byte[] decryptedData = decryptionBlowfish.Decrypt(fileBytes);
+            string decryptedString = Encoding.ASCII.GetString(decryptedData);
+            
+            lines = decryptedString.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+        }
+        else
+        {
+            lines = File.ReadAllLines(filePath);
+        }
 
         object currentSectionObject = null;
         Type currentSectionType = null;

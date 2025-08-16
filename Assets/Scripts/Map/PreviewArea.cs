@@ -5,7 +5,7 @@ using UnityEngine;
 public class PreviewArea : MonoBehaviour
 {
     public Camera cam => transform.parent.GetComponent<Camera>();
-    public Vector3Int mousePos => TileEditor.instance.currentTilemap[1].WorldToCell(cam.ScreenToWorldPoint(Input.mousePosition));
+    public Vector3Int mousePos => TileEditor.instance.currentTilemap[MapManager.instance.currentLayer].WorldToCell(cam.ScreenToWorldPoint(Input.mousePosition));
     public SpriteRenderer sprite => GetComponent<SpriteRenderer>();
     public static PreviewArea instance;
     // Start is called before the first frame update
@@ -14,10 +14,10 @@ public class PreviewArea : MonoBehaviour
         instance = this;
     }
     
-    public void AreaPreview(Color color, Vector3Int startAreaPos)
+    public void AreaPreview(Color color, Vector3Int startAreaPos, Vector3Int endAreaPos = new Vector3Int())
     {
-        var endAreaPos = mousePos;
-    
+        if (endAreaPos == new Vector3Int()) endAreaPos = mousePos;
+        
         float width = Mathf.Abs(endAreaPos.x - startAreaPos.x) + 1;
         float height = Mathf.Abs(endAreaPos.y - startAreaPos.y) + 1;
 

@@ -5,6 +5,8 @@ public class PerimeterVisualizer : MonoBehaviour
 {
     public static PerimeterVisualizer instance;
     public List<GameObject> perimeters;
+
+    public GameObject zones;
     
     // Start is called before the first frame update
     void Start()
@@ -28,6 +30,8 @@ public class PerimeterVisualizer : MonoBehaviour
             {
                 child.gameObject.GetComponent<SpriteRenderer>().enabled = true;
             }
+            
+            zones.SetActive(true);
         }
         
         if (Input.GetKeyUp(KeyCode.Tab))
@@ -35,6 +39,7 @@ public class PerimeterVisualizer : MonoBehaviour
             foreach (GameObject child in perimeters)
             {
                 child.gameObject.GetComponent<SpriteRenderer>().enabled = false;
+                zones.SetActive(false);
             }
         }
 
@@ -63,6 +68,11 @@ public class PerimeterVisualizer : MonoBehaviour
             else if (go == perimeters[3]) go.transform.position = new Vector3(Mathf.Clamp(Mathf.RoundToInt(currentMousePos.x - mousePos.x), -500, -500 + 108), go.transform.position.y, 0);
 
             UpdatePerimFromVisuals();
+        }
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            go = null;
         }
     }
     

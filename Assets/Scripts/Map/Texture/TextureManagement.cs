@@ -24,6 +24,12 @@ public class TextureManagement : MonoBehaviour
     {
         instance = this;
     }
+
+    public Texture2D tex;
+    
+    
+
+
     
     public void GroundHelper()
     {
@@ -147,7 +153,11 @@ public class TextureManagement : MonoBehaviour
         texture.filterMode = FilterMode.Point;
         groundTexture.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
             new Vector2(0, 1), 16);
+
     }
+    
+
+    public SpriteRenderer grid;
 
     private IEnumerator LoadUnderground(string path)
     {

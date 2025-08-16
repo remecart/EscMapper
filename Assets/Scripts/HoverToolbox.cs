@@ -34,11 +34,11 @@ public class HoverToolboxTMP : MonoBehaviour
             out localPoint
         );
 
-        Vector2 offset = new Vector2(5f, -15f);
-        tooltipRect.anchoredPosition = localPoint + offset;
-
         if (tooltipRect.anchoredPosition.x < 0) tooltipRect.pivot = new Vector2(0, -0.2f);
         else tooltipRect.pivot = new Vector2(1, -0.2f);
+        
+        Vector2 offset = new Vector2(-5f * ((tooltipRect.pivot.x - 0.5f) * 2), -15f);
+        tooltipRect.anchoredPosition = localPoint + offset;
 
         GameObject hovered = GetHoveredUIElement() ?? GetHovered2DWorldObject();
         if (hovered != null && hovered.CompareTag(hoverTag))

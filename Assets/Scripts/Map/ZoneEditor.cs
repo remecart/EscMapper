@@ -8,7 +8,7 @@ public class ZoneEditor : MonoBehaviour
     public static ZoneEditor instance;
     private GameObject AreaPreview => PreviewArea.instance.gameObject;
     public Camera cam;
-    private Vector3Int mousePos => TileEditor.instance.currentTilemap[1].WorldToCell(cam.ScreenToWorldPoint(Input.mousePosition));
+    public Vector3Int mousePos => TileEditor.instance.currentTilemap[1].WorldToCell(cam.ScreenToWorldPoint(Input.mousePosition));
     public int selectedZoneIndex => dropdown.value;
     
     public GameObject ZoneParent;
@@ -26,13 +26,11 @@ public class ZoneEditor : MonoBehaviour
     private bool isDragging = false;
     
     private GameObject selectedZone;
-    private Color selectedZoneColor = Color.white;
     
     // Start is called before the first frame update
     void Start()
     {
         instance = this;
-        RefreshAvailableZones();
         InvokeRepeating(nameof(SaveZones), 1f, 1f);
         InvokeRepeating(nameof(RefreshAvailableZones), 0.1f, 0.1f);
     }
@@ -147,7 +145,8 @@ public class ZoneEditor : MonoBehaviour
     private void RefreshAvailableZones()
     {
         availableNames = new List<string>(ZoneNames);
-
+        var currentOption = dropdown.options[dropdown.value].text;
+        
         foreach (Transform child in ZoneParent.transform)
         {
             availableNames.Remove(child.gameObject.name);
@@ -155,6 +154,17 @@ public class ZoneEditor : MonoBehaviour
 
         dropdown.ClearOptions();
         dropdown.AddOptions(availableNames);
+        
+        if (!string.IsNullOrEmpty(currentOption))
+        {
+            int newIndex = availableNames.IndexOf(currentOption);
+            dropdown.value = newIndex >= 0 ? newIndex : 0;
+        }
+        else
+        {
+            dropdown.value = 0;
+        }
+
     }
     
     private void StopActions()
@@ -236,6 +246,7 @@ public class ZoneEditor : MonoBehaviour
                 DeselectZone();
                 startPos = mousePos;
                 isDragging = true;
+                cache = dropdown.options[dropdown.value].text;
             }
         }
 
@@ -251,7 +262,7 @@ public class ZoneEditor : MonoBehaviour
             {
                 selectedZone.transform.position = mousePos + offset;
             }
-            else if (Input.GetMouseButtonUp(0))
+            else if (Input.GetMouseButtonDown(0))
             {
                 DeselectZone();
             }
@@ -261,6 +272,8 @@ public class ZoneEditor : MonoBehaviour
 
         HandleZonePlacing(mouseWorld);
     }
+
+    private string cache;
     
     private void HandleZonePlacing(Vector3 mouseWorld)
     {
@@ -295,7 +308,7 @@ public class ZoneEditor : MonoBehaviour
 
         if (Input.GetMouseButton(0) && isDragging && availableNames.Count != 0)
         {
-            PreviewArea.instance.AreaPreview(GetColor(dropdown.options[dropdown.value].text), startPos);
+            PreviewArea.instance.AreaPreview(GetColor(cache), startPos, mousePos);
         }
     }
     
@@ -309,7 +322,7 @@ public class ZoneEditor : MonoBehaviour
         var sr = selectedZone.GetComponent<SpriteRenderer>();
         if (sr != null)
         {
-            sr.color = selectedZoneColor;
+            sr.color = GetColor(zone.name) + Color.white * 0.1f;
         }
     }
 

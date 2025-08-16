@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -37,19 +38,43 @@ public class ObjectEditor : MonoBehaviour
     }
 
     private bool _clickedOnUI;
+    public bool stopControls;
     
-    // Update is called once per frame
-    void Update()
+    public void StopActions()
     {
-        if (currentTilemapLayer == 4) return;
-        
-        if (mousePos.x < 0 || mousePos.x > 107 || mousePos.y > 0 || mousePos.y < -107)
+        copyEntries.Clear();
+        copyAnchorOffset = new();
+    }
+    
+    public void Update()
+    {
+        if (Input.GetKeyUp(KeyCode.LeftShift) || Input.GetKeyUp(KeyCode.LeftControl))
         {
+            stopControls = false;
+        }
+
+        if (stopControls)
+        {
+            StopActions();
+            return;
+        }
+        
+        if (currentTilemapLayer == 4) 
+        {
+            StopActions();
+            return;
+        }
+        
+        if (mousePos.x < 0 || mousePos.y > 0)
+        {
+            if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.LeftControl)) stopControls = true;
+            StopActions();
             return;
         }
         
         if (MapProperties.instance.IsEmpty())
         {
+            StopActions();
             return;
         }
 
@@ -81,7 +106,7 @@ public class ObjectEditor : MonoBehaviour
         if (PreventPlaceBehindGUI.instance.behindUI) return;
         if (_clickedOnUI) return;
         
-        if (Input.GetMouseButtonDown(2) && Input.GetKey(KeyCode.LeftControl))
+        if (Input.GetMouseButtonDown(2) && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.LeftAlt)))
         {
             GetObject();
         }
@@ -185,18 +210,9 @@ public class ObjectEditor : MonoBehaviour
         foreach (var entry in copyEntries)
         {
             Vector3 newPos = mouseWorldAnchor + entry.position; // entry.position is relative to original endPos
-
-            // Prevent overlapping existing objects
-            bool occupied = false;
-            foreach (Transform child in ObjectLayers[entry.layer].transform)
-            {
-                if (Vector3.Distance(child.position, newPos) < 0.5f)
-                {
-                    occupied = true;
-                    break;
-                }
-            }
-            if (occupied) continue;
+            
+            
+            if (newPos.x < 0 || newPos.y > 0) continue;
 
             GameObject prefab = ObjectLookupTable.instance.objects[entry.id];
             GameObject go = Instantiate(prefab);

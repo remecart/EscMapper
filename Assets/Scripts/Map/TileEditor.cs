@@ -37,7 +37,8 @@ public class TileEditor : MonoBehaviour
     }
 
     private bool _clickedOnUI;
-
+    private bool stopControls;
+    
     private void StopActions()
     {
         startCopyPos = new();
@@ -48,14 +49,27 @@ public class TileEditor : MonoBehaviour
     
     public void Update()
     {
+        if (Input.GetKeyUp(KeyCode.LeftShift) || Input.GetKeyUp(KeyCode.LeftControl))
+        {
+            stopControls = false;
+        }
+        
+        if (stopControls)
+        {
+            StopActions();
+            return;
+        }
+        
         if (currentTilemapLayer == 4)
         {
             StopActions();
             return;
         }
         
-        if (mousePos.x < 0 || mousePos.x > 107 || mousePos.y > 0 || mousePos.y < -107)
+        if (mousePos.x < 0 || mousePos.y > 0)
         {
+            if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.LeftControl)) stopControls = true;
+            PreviewArea.instance.gameObject.transform.localScale = new Vector3(0, 0, 0);
             StopActions();
             return;
         }
@@ -87,8 +101,6 @@ public class TileEditor : MonoBehaviour
             return;
         }
 
-        
-
         if (!Input.GetKey(KeyCode.LeftControl))
         {
             if (!Input.GetKey(KeyCode.LeftShift)) startAreaPos = new Vector3Int();
@@ -106,7 +118,7 @@ public class TileEditor : MonoBehaviour
                 PlaceTile(true);
             }
         
-            if (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButton(1)) PreviewArea.instance.AreaPreview(deleteColor, startAreaPos);
+            if (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButton(1)) PreviewArea.instance.AreaPreview(deleteColor, startAreaPos, mousePos);
         
             if (startAreaPos == new Vector3Int()) areaPreview.transform.localScale = new Vector3(0, 0, 0);
         }
@@ -146,7 +158,7 @@ public class TileEditor : MonoBehaviour
             copiedIds = new();
         }
         
-        if (Input.GetMouseButtonDown(2) && Input.GetKey(KeyCode.LeftControl))
+        if (Input.GetMouseButtonDown(2) && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.LeftAlt)))
         {
             var tile = currentTilemap[currentTilemapLayer].GetTile(mousePos) as CustomTile;
             if (tile != null)
@@ -220,6 +232,12 @@ public class TileEditor : MonoBehaviour
             for (int x = 0; x <= width; x++)
             {
                 Vector3Int pos = new Vector3Int(pasteStartX + x, pasteStartY + y, 0);
+
+                if (pos.x < 0 || pos.y > 0)
+                {
+                    count++;
+                    continue;
+                }
 
                 var tile = currentTilemap[currentTilemapLayer].GetTile(pos) as CustomTile;
                 var undoId = tile ? tile.id : -1;
@@ -331,9 +349,9 @@ public class TileEditor : MonoBehaviour
         foreach (Tilemap tilemap in currentTilemap)
         {
             tilemap.transform.parent.gameObject.SetActive(true);
-            for (int x = 0; x < 110; x++)
+            for (int x = 0; x < 200; x++)
             {
-                for (int y = 0; y < 110; y++)
+                for (int y = 0; y < 200; y++)
                 {
                     tilemap.SetTile(new Vector3Int(x, -y, 0), null);
                 }

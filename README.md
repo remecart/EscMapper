@@ -9,3 +9,5 @@ EscMapper is a powerful tool designed to streamline the creation and editing of 
 - Camera Controls: Navigate your map using intuitive camera movement and zoom options.
 - Full Object Support: Access and place all object types, including hidden or special ones like Charlie and the Payphone.
 - Convenient UI: A clean and responsive interface designed for faster, more efficient editing.
+
+More info can be found on the discord: https://discord.gg/BEqUC7QP

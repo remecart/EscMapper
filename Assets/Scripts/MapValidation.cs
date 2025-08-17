@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using TMPro;
 using UnityEngine;
 
 
@@ -11,12 +12,32 @@ public class MapValidation : MonoBehaviour
     public List<GameObject> objects;
     public List<GameObject> zones;
 
+    public Transform errorParent;
+    public GameObject errorMessage;
+
+    public SmoothScrollRectTransform scroll;
+
+    bool show;
+    public GameObject UI;
+
     public void Update()
     {
         if (Input.GetKeyDown(KeyCode.H))
         {
             ValidateMap();
         }
+        
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            show = false;
+            UI.SetActive(false);
+        }
+    }
+
+    public void CloseHelpMenu()
+    {
+        show = !show;
+        UI.SetActive(show);
     }
 
     public void ValidateMap()
@@ -24,11 +45,15 @@ public class MapValidation : MonoBehaviour
         GetAllObjects();
         errors.Clear();
 
+        foreach (Transform child in errorParent.transform)
+        {
+            Destroy(child.gameObject);
+        }
+
         var count = 1;
         var properties = MapProperties.instance.properties;
 
         if (properties == null) return;
-
 
         if (properties.Info.MapName == string.Empty) LogError(count++, "No map name!");
         if (properties.Info.Warden == string.Empty) LogError(count++, "No warden name!");
@@ -151,7 +176,7 @@ public class MapValidation : MonoBehaviour
             if (GetObjectsOfType(44) == 0) LogError(count++, $"Metalshop: No licence plates container!");
             if (GetZoneOfType("Metalshop")) LogError(count++, $"Metalshop zone is missing!");
         }
-        
+
         if (GetZoneOfType("SHU")) LogError(count++, $"SHU zone is missing!");
         if (GetZoneOfType("YourCell")) LogError(count++, $"YourCell zone is missing!");
         if (GetZoneOfType("Cells1")) LogError(count++, $"Cells1 zone is missing!");
@@ -159,7 +184,17 @@ public class MapValidation : MonoBehaviour
         if (GetZoneOfType("Gym")) LogError(count++, $"Gym zone is missing!");
         if (GetZoneOfType("Rollcall")) LogError(count++, $"Rollcall zone is missing!");
         if (GetZoneOfType("Canteen")) LogError(count++, $"Canteen zone is missing!");
+
+        foreach (var error in errors)
+        {
+            var go = Instantiate(errorMessage);
+            go.transform.SetParent(errorParent);
+            go.GetComponent<TextMeshProUGUI>().text = error;
+        }
+
+        scroll.RecalculateHeight();
     }
+
 
     private int GetActiveJobs(Properties properties)
     {
@@ -181,7 +216,7 @@ public class MapValidation : MonoBehaviour
                 objects.Add(child.gameObject);
             }
         }
-        
+
         foreach (Transform child in ZoneEditor.instance.ZoneParent.transform)
         {
             zones.Add(child.gameObject);
@@ -196,7 +231,7 @@ public class MapValidation : MonoBehaviour
 
         return list.Count;
     }
-    
+
     public bool GetZoneOfType(string zoneName)
     {
         var list = zones

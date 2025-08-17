@@ -252,6 +252,7 @@ public class ObjectEditor : MonoBehaviour
             });
 
             Destroy(co.gameObject);
+            TileEditor.instance.tempPos = mousePos;
         }
         
         RemoveDuplicateObjects();

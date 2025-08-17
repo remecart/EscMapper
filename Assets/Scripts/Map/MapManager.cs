@@ -107,8 +107,6 @@ public class MapManager : MonoBehaviour
                 MapProperties.instance.properties.Objects.Add(entry);
             }
         }
-
-        MapProperties.instance.SaveMap();
     }
 
     public void LoadLevel()

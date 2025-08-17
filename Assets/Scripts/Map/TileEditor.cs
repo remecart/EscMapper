@@ -29,6 +29,7 @@ public class TileEditor : MonoBehaviour
     {
         selectedTileIndex = TileSelection.instance.ConvertXtoY(newSelectedTileIndex, 4, 25);
         placementMode = true;
+        TileSelection.instance.UpdateBox();
     }
 
     public void Start()
@@ -38,6 +39,8 @@ public class TileEditor : MonoBehaviour
 
     private bool _clickedOnUI;
     private bool stopControls;
+
+    public Vector3Int tempPos;
     
     private void StopActions()
     {
@@ -65,7 +68,8 @@ public class TileEditor : MonoBehaviour
             StopActions();
             return;
         }
-        
+
+        if (Input.GetMouseButtonUp(1) || tempPos != mousePos) tempPos = new Vector3Int(999, 999, 0);
         if (mousePos.x < 0 || mousePos.y > 0)
         {
             if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.LeftControl)) stopControls = true;
@@ -336,7 +340,10 @@ public class TileEditor : MonoBehaviour
 
         if (delete)
         {
-            currentTilemap[currentTilemapLayer].SetTile(pos, null);
+            if (pos != tempPos)
+            {
+                currentTilemap[currentTilemapLayer].SetTile(pos, null);
+            }
         }
         else
         {

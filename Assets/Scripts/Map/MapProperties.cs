@@ -42,6 +42,20 @@ public class MapProperties : MonoBehaviour
         properties = new Properties();
     }
 
+    public void Update()
+    {
+        if (!Input.GetKey(KeyCode.LeftControl)) return;
+        
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            SaveMap();
+        }
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            ExportMap();
+        }
+    }
+
     public void PropertiesUI()
     {
         var dropdownSetters = new Action<int>[]
@@ -211,6 +225,8 @@ public class MapProperties : MonoBehaviour
         if (!Directory.Exists(documentsPath)) documentsPath = "";
         var path = StandaloneFileBrowser.SaveFilePanel("Save Project", documentsPath, properties.Info.MapName, "proj");
         
+        MapManager.instance.SaveLevel();
+        
         properties.Info.Custom = -1;
         properties.Info.Rdy = 0;
         properties.Info.Version = "";
@@ -222,6 +238,8 @@ public class MapProperties : MonoBehaviour
         var documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "The Escapists", "Custom Maps");
         if (!Directory.Exists(documentsPath)) documentsPath = "";
         var path = StandaloneFileBrowser.SaveFilePanel("Save Project", documentsPath, properties.Info.MapName, "cmap");
+        
+        MapManager.instance.SaveLevel();
         
         properties.Info.Custom = 2;
         properties.Info.Rdy = 1;

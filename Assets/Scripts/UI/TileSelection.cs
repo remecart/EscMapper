@@ -1,3 +1,4 @@
+using System;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,12 +7,26 @@ public class TileSelection : MonoBehaviour
 {
     public static TileSelection instance;
 
+    public GameObject box;
+
+    public void UpdateBox()
+    {
+        box.SetActive(true);
+        box.transform.SetParent(transform.GetChild(ConvertXtoY(TileEditor.instance.selectedTileIndex, 25, 4) - 1));
+        box.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+    }
+
     // Start is called before the first frame update
     void Start()
     {
         instance = this;
     }
-    
+
+    private void Update()
+    {
+        if (!TileEditor.instance.placementMode) box.SetActive(false);
+    }
+
     // Update is called once per frame
     // ReSharper disable Unity.PerformanceAnalysis
     public void ReloadPageTextures()
@@ -25,7 +40,6 @@ public class TileSelection : MonoBehaviour
                     TextureManagement.instance.loadedTiles[convertedId];
             }
         }
-
     }
     
     public int ConvertXtoY(int id, int width, int height)

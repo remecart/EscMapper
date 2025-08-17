@@ -28,6 +28,12 @@ public class SmoothScrollRectTransform : MonoBehaviour, IPointerEnterHandler, IP
         timeSinceLastScroll += Time.deltaTime;
     }
 
+    public void RecalculateHeight()
+    {
+        var count = transform.GetChild(0).childCount;
+        targetRect.sizeDelta = new Vector2(350, count * 20);
+    }
+
     private IEnumerator SmoothScrollCoroutine(Vector2 target)
     {
         Vector2 startPosition = targetRect.anchoredPosition;

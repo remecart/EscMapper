@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -26,11 +27,17 @@ public class TextureManagement : MonoBehaviour
     }
 
     public Texture2D tex;
-    
-    
 
+    private void Update()
+    {
+        if (!Input.GetKey(KeyCode.LeftControl)) return;
+        
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            ReloadTextures();
+        }
+    }
 
-    
     public void GroundHelper()
     {
         int tileSize = 16;
@@ -137,6 +144,26 @@ public class TextureManagement : MonoBehaviour
         TileProperties.instance.GetProperties();
     }
 
+    public static Texture2D CropTexture(Texture2D source, int targetWidth, int targetHeight)
+    {
+        // Determine actual crop dimensions
+        int cropWidth = source.width > targetWidth ? targetWidth : source.width;
+        int cropHeight = source.height > targetHeight ? targetHeight : source.height;
+
+        // Calculate starting Y position (from top-left)
+        int startY = source.height - cropHeight;
+
+        // Get pixels from top-left corner
+        Color[] pixels = source.GetPixels(0, startY, cropWidth, cropHeight);
+
+        // Create new texture and apply pixels
+        Texture2D cropped = new Texture2D(cropWidth, cropHeight, source.format, false);
+        cropped.SetPixels(pixels);
+        cropped.Apply();
+
+        return cropped;
+    }
+    
     private IEnumerator LoadGround(string tileset, string path)
     {
         var file = $"ground_cus_{tileset}.gif";
@@ -149,6 +176,8 @@ public class TextureManagement : MonoBehaviour
         }
 
         var texture = LoadFirstGifFrame(fullPath);
+        texture = CropTexture(texture, 1728, 1728);
+        
 
         texture.filterMode = FilterMode.Point;
         groundTexture.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
@@ -156,9 +185,6 @@ public class TextureManagement : MonoBehaviour
 
     }
     
-
-    public SpriteRenderer grid;
-
     private IEnumerator LoadUnderground(string path)
     {
         var file = $"soil_cus.gif";
@@ -171,6 +197,8 @@ public class TextureManagement : MonoBehaviour
         }
 
         var texture = LoadFirstGifFrame(fullPath); 
+        texture = CropTexture(texture, 1728, 1728);
+        
         texture.filterMode = FilterMode.Point;
         undergroundTexture.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
             new Vector2(0, 1), 16);

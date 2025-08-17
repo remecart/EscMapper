@@ -10,7 +10,9 @@ public class MapSettingsMenu : MonoBehaviour
 
     public GameObject Menu;
     public List<GameObject> Pages;
-    
+
+    public GameObject helpMenu;
+    public bool help;
     
     private void Start()
     {
@@ -21,7 +23,18 @@ public class MapSettingsMenu : MonoBehaviour
     {
         if (FolderPath.instance.Config == null) return;
         if (ExitEditor.instance.UI.activeSelf) return;
-        if (Input.GetKeyDown(KeyCode.Escape)) ToggleMenu();
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            ToggleMenu();
+            help = false;
+            helpMenu.SetActive(false);
+        }
+    }
+    
+    public void CloseHelpMenu()
+    {
+        help = !help;
+        helpMenu.SetActive(help);
     }
 
     public void ToggleMenu()

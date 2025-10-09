@@ -1,4 +1,4 @@
-Shader "Unlit/Blending/GlowMultiplier_Fixed"
+Shader "Unlit/Blending/GlowMultiplier_Additive"
 {
     Properties
     {
@@ -14,12 +14,12 @@ Shader "Unlit/Blending/GlowMultiplier_Fixed"
         Tags { "Queue"="Transparent" "RenderType"="Transparent" "IgnoreProjector"="True" }
         Cull Off
         ZWrite Off
+        Blend One One  // additive blending
+
         GrabPass { "_BackgroundTex" }
 
         Pass
         {
-            Blend SrcAlpha OneMinusSrcAlpha
-
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
@@ -55,37 +55,27 @@ Shader "Unlit/Blending/GlowMultiplier_Fixed"
                 return o;
             }
 
-fixed4 frag (v2f i) : SV_Target
-{
-    fixed4 texColor = tex2D(_MainTex, i.texcoord);
+            fixed4 frag (v2f i) : SV_Target
+            {
+                fixed4 texColor = tex2D(_MainTex, i.texcoord);
 
-    // Remove fully transparent pixels
-    if (texColor.a < _AlphaCutoff)
-        discard;
+                if (texColor.a < _AlphaCutoff)
+                    discard;
 
-    // Sample background
-    fixed4 bgColor = tex2Dproj(_BackgroundTex, UNITY_PROJ_COORD(i.screenPos));
+                fixed4 bgColor = tex2Dproj(_BackgroundTex, UNITY_PROJ_COORD(i.screenPos));
 
-    // Background brightness → glow multiplier
-    float bgBrightness = dot(bgColor.rgb, float3(0.299, 0.587, 0.114));
-    float glow = lerp(_MinGlow, _MaxGlow, bgBrightness);
+                float bgBrightness = dot(bgColor.rgb, float3(0.299, 0.587, 0.114));
+                float glow = lerp(_MinGlow, _MaxGlow, bgBrightness);
 
-    // Fade edges smoothly
-    float fade = smoothstep(_AlphaCutoff, 1.0, texColor.a);
+                float fade = smoothstep(_AlphaCutoff, 1.0, texColor.a);
 
-    // Apply glow multiplier & fade to sprite color
-    fixed3 glowColor = texColor.rgb * _Color.rgb * glow * fade;
+                fixed3 glowColor = texColor.rgb * _Color.rgb * glow * fade;
 
-    // Additively blend over the background
-    fixed3 finalColor = bgColor.rgb + glowColor;
-
-    return fixed4(finalColor, 1.0); // alpha 1.0 so it writes the brightened color
-}
-
-
+                return fixed4(glowColor, glow * fade);
+            }
             ENDCG
         }
     }
 
-    Fallback "Diffuse"
+    Fallback "Unlit/Transparent"
 }

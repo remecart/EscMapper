@@ -11,48 +11,62 @@ public class HoverToolboxTMP : MonoBehaviour
     private GameObject tooltipInstance;
     private TextMeshProUGUI tooltipText;
     private RectTransform tooltipRect;
-    private RectTransform canvasRect;
+    private Canvas canvas;
 
     void Start()
     {
         tooltipInstance = Instantiate(tooltipPrefab, transform);
         tooltipText = tooltipInstance.GetComponentInChildren<TextMeshProUGUI>();
         tooltipRect = tooltipInstance.GetComponent<RectTransform>();
-        canvasRect = tooltipInstance.GetComponentInParent<Canvas>().GetComponent<RectTransform>();
+        canvas = tooltipInstance.GetComponentInParent<Canvas>();
 
         tooltipInstance.SetActive(false);
     }
+
     void Update()
     {
-        RectTransform parentRect = tooltipRect.parent as RectTransform;
-
-        Vector2 localPoint;
+        Vector2 anchoredPos;
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            parentRect,
+            canvas.transform as RectTransform,
             Input.mousePosition,
-            tooltipInstance.GetComponentInParent<Canvas>().worldCamera,
-            out localPoint
+            canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera,
+            out anchoredPos
         );
 
-        if (tooltipRect.anchoredPosition.x < 0) tooltipRect.pivot = new Vector2(0, -0.2f);
-        else tooltipRect.pivot = new Vector2(1, -0.2f);
+        tooltipRect.anchoredPosition = anchoredPos + new Vector2(15f, -15f);
+        var screenMidX = Screen.width / 2f;
         
-        Vector2 offset = new Vector2(-5f * ((tooltipRect.pivot.x - 0.5f) * 2), -15f);
-        tooltipRect.anchoredPosition = localPoint + offset;
+        if (Input.mousePosition.x > screenMidX)
+        {
+            tooltipRect.pivot = new Vector2(1f, 1f);
+        }
+        else
+        {
+            tooltipRect.pivot = new Vector2(0f, 1f);
+        }
 
         GameObject hovered = GetHoveredUIElement() ?? GetHovered2DWorldObject();
         if (hovered != null && hovered.CompareTag(hoverTag))
         {
             int bracketEnd = hovered.name.IndexOf("]");
             tooltipText.text = hovered.name.Substring(bracketEnd + 1).Trim().Replace("(Clone)", "");
-            tooltipInstance.SetActive(true);
+
+            if (tooltipText.text.Contains("RawImage"))
+            {
+                tooltipInstance.SetActive(false);
+                tooltipText.text = "";
+            }
+            else
+            {
+                tooltipInstance.SetActive(true);
+            }
         }
         else
         {
             tooltipInstance.SetActive(false);
         }
     }
-    
+
     GameObject GetHovered2DWorldObject()
     {
         Vector2 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);

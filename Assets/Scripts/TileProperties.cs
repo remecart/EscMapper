@@ -115,10 +115,12 @@ public class TileProperties : MonoBehaviour
         "Floor", "Floor", "Obstacle", "Obstacle", "Floor"
     };
 
+    public List<string> currentProperties = new List<string>();
 
     // Start is called before the first frame update
     void Start()
     {
+        currentProperties = perks;
         instance = this;
     }
 
@@ -130,6 +132,8 @@ public class TileProperties : MonoBehaviour
             {
                 transform.GetChild(1).transform.GetChild(i).gameObject.name = perks[ConvertXtoY(i + 1, 4, 25) - 1];
             }
+
+            currentProperties = perks;
         }
 
         if (MapProperties.instance.properties.Info.Tileset == "stalagflucht")
@@ -139,6 +143,8 @@ public class TileProperties : MonoBehaviour
                 transform.GetChild(1).transform.GetChild(i).gameObject.name =
                     stalagflucht[ConvertXtoY(i + 1, 4, 25) - 1];
             }
+            
+            currentProperties = stalagflucht;
         }
 
         if (MapProperties.instance.properties.Info.Tileset == "shanktonstatepen")
@@ -148,6 +154,8 @@ public class TileProperties : MonoBehaviour
                 transform.GetChild(1).transform.GetChild(i).gameObject.name =
                     shanktonstatepen[ConvertXtoY(i + 1, 4, 25) - 1];
             }
+            
+            currentProperties = shanktonstatepen;
         }
         
         if (MapProperties.instance.properties.Info.Tileset == "jungle")
@@ -157,6 +165,7 @@ public class TileProperties : MonoBehaviour
                 transform.GetChild(1).transform.GetChild(i).gameObject.name =
                     jungle[ConvertXtoY(i + 1, 4, 25) - 1];
             }
+            currentProperties = jungle;
         }
         
         if (MapProperties.instance.properties.Info.Tileset == "sanpancho")
@@ -166,6 +175,7 @@ public class TileProperties : MonoBehaviour
                 transform.GetChild(1).transform.GetChild(i).gameObject.name =
                     sanpancho[ConvertXtoY(i + 1, 4, 25) - 1];
             }
+            currentProperties = sanpancho;
         }
         
         if (MapProperties.instance.properties.Info.Tileset == "irongate")
@@ -175,6 +185,7 @@ public class TileProperties : MonoBehaviour
                 transform.GetChild(1).transform.GetChild(i).gameObject.name =
                     irongate[ConvertXtoY(i + 1, 4, 25) - 1];
             }
+            currentProperties = irongate;
         }
     }
 

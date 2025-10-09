@@ -164,19 +164,19 @@ public class TextureManagement : MonoBehaviour
         return cropped;
     }
     
-    private IEnumerator LoadGround(string tileset, string path)
+    private IEnumerator LoadGround(string floor, string path)
     {
-        var file = $"ground_cus_{tileset}.gif";
+        var file = $"ground_cus_{floor}.gif";
         var fullPath = Path.Combine(path, file);
 
         if (!File.Exists(fullPath))
         {
-            Debug.LogWarning($"[WARNING] TextureManagement.cs - {file} does not exist!");
+            Debug.LogError($"[WARNING] TextureManagement.cs - {file} does not exist!");
             yield break;
         }
 
         var texture = LoadFirstGifFrame(fullPath);
-        texture = CropTexture(texture, 1728, 1728);
+        if (FolderPath.instance.cropGroundTex.isOn) texture = CropTexture(texture, 1728, 1728);
         
 
         texture.filterMode = FilterMode.Point;
@@ -192,7 +192,7 @@ public class TextureManagement : MonoBehaviour
 
         if (!File.Exists(fullPath))
         {
-            Debug.LogWarning($"[WARNING] TextureManagement.cs - soil_cus.gif does not exist!");
+            Debug.LogError($"[WARNING] TextureManagement.cs - soil_cus.gif does not exist!");
             yield break;
         }
 
@@ -240,14 +240,19 @@ public class TextureManagement : MonoBehaviour
 
         if (!File.Exists(fullPath))
         {
-            Debug.LogWarning($"[WARNING] TextureManagement.cs - {file} does not exist!");
-            yield break;
+            Debug.LogError($"[WARNING] TextureManagement.cs - {file} does not exist!");
+            loadedTiles.Clear();
+            for (int i = 0; i < 101; i++)
+            {
+                loadedTiles.Add(missingTile);
+            }
         }
-
-        byte[] gifBytes = File.ReadAllBytes(fullPath);
-
-        var texture = LoadFirstGifFrame(fullPath);
-        SpitTextureToTiles(texture);
+        else
+        {
+            byte[] gifBytes = File.ReadAllBytes(fullPath);
+            var texture = LoadFirstGifFrame(fullPath);
+            SpitTextureToTiles(texture);
+        }
 
         foreach (var tilemap in TileEditor.instance.currentTilemap)
         {
@@ -267,6 +272,11 @@ public class TextureManagement : MonoBehaviour
                 }
             }
         }
+        
+        MapManager.instance.ReloadCustomTiles();
+        TileSelection.instance.ReloadPageTextures();
+        
+        yield break;
     }
     
     private void SpitTextureToTiles(Texture2D texture)
@@ -298,12 +308,7 @@ public class TextureManagement : MonoBehaviour
                         color.a = 0;
                         pixels[i] = color;
                     }
-                    else if (pixels[i].r == 0 && pixels[i].g == 0 && pixels[i].b == 0)
-                    {
-                        var color = pixels[i];
-                        color.a = 1;
-                        pixels[i] = color;
-                    }
+
                 }
 
                 var tile = new Texture2D(tileRes, tileRes);
@@ -314,9 +319,6 @@ public class TextureManagement : MonoBehaviour
                 loadedTiles.Add(tile);
             }
         }
-
-        MapManager.instance.ReloadCustomTiles();
-        TileSelection.instance.ReloadPageTextures();
     }
 
 

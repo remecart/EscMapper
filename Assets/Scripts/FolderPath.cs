@@ -4,6 +4,7 @@ using SFB;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class FolderPath : MonoBehaviour
 {
@@ -15,6 +16,12 @@ public class FolderPath : MonoBehaviour
     public string path;
     
     public TMP_InputField sourcePath;
+    public Toggle viewGrid;
+    public Toggle cropGroundTex;
+    public Toggle previewTile;
+    public Toggle enableDebugText;
+    public Toggle editorSounds;
+    public Slider volume;
     
     // Start is called before the first frame update
     void Start()
@@ -30,6 +37,11 @@ public class FolderPath : MonoBehaviour
             string raw = File.ReadAllText(configPath);
             Config = JsonUtility.FromJson<Config>(raw);
 
+            viewGrid.isOn = Config.viewGrid;
+            cropGroundTex.isOn = Config.cropGround;
+            previewTile.isOn = Config.previewTile;
+            enableDebugText.isOn = Config.enableDebug;
+            
             // Check if the directory exists
             if (Config == null)
             {
@@ -49,6 +61,15 @@ public class FolderPath : MonoBehaviour
             UI.gameObject.SetActive(true);
         }
     }
+
+    private void Update()
+    {
+        PreviewTile.SetActive(previewTile.isOn);
+        DebugText.SetActive(enableDebugText.isOn);
+    }
+
+    public GameObject PreviewTile;
+    public GameObject DebugText;
 
     public void SourceFolderPath()
     {
@@ -90,14 +111,23 @@ public class FolderPath : MonoBehaviour
 
     private void OnDestroy()
     {
+        Config.viewGrid = viewGrid.isOn;
+        Config.cropGround = cropGroundTex.isOn;
+        Config.previewTile = previewTile.isOn;
+        Config.enableDebug = enableDebugText.isOn;
+        
         var documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         string savepath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "EscMapper", "config.json");
         Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "EscMapper"));
-        File.WriteAllText(savepath, JsonUtility.ToJson(Config));
+        File.WriteAllText(savepath, JsonUtility.ToJson(Config, true));
     }
 }
 
 public class Config
 {
     public string sourceFolderPath;
+    public bool viewGrid = true;
+    public bool cropGround = true;
+    public bool previewTile = true;
+    public bool enableDebug = true;
 }

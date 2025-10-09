@@ -242,6 +242,8 @@ public class ObjectEditor : MonoBehaviour
 
         if (hit != null && hit.TryGetComponent(out CustomObject co))
         {
+            if (hit.transform.parent != ObjectLayers[TileEditor.instance.currentTilemapLayer].transform) return;
+            
             UndoRedoManager.instance.SaveState(new List<UndoEntry> {
                 new UndoEntry {
                     isTile = false,
@@ -276,14 +278,18 @@ public class ObjectEditor : MonoBehaviour
     void PlaceObject(Objects obj = null)
     {
         Vector3 worldPos = new Vector3(mousePos.x + 0.5f, mousePos.y + 0.5f, 0);
-        Vector2 checkPos = new Vector2(worldPos.x, worldPos.y);
 
         float parsedX, parsedY;
 
         float.TryParse(OffsetX.text, out parsedX);
         float.TryParse(OffsetY.text, out parsedY);
+        
+        Collider2D hit = Physics2D.OverlapPoint(worldPos);
 
-        if (Physics2D.OverlapPoint(checkPos)) return;
+        if (hit != null && hit.TryGetComponent(out CustomObject co2))
+        {
+            if (hit.transform.parent.parent == ObjectLayers[TileEditor.instance.currentTilemapLayer].transform) return;
+        }
 
         GameObject go = Instantiate(currentObject);
         go.transform.SetParent(ObjectLayers[currentTilemapLayer].transform);

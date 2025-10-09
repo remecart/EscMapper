@@ -23,18 +23,23 @@ public class RuntimeGrid : MonoBehaviour
         lineRenderer = GetComponent<LineRenderer>();
         lineRenderer.sortingLayerName = sortingLayerName;
         lineRenderer.sortingOrder = sortingOrder;
-
+        toggle = FolderPath.instance.Config.viewGrid;
         DrawLines();
     }
 
     public bool toggle;
-    
+
+    public void UpdateGridStatus()
+    {
+        toggle = FolderPath.instance.viewGrid.isOn;
+    }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.G))
         {
             toggle = !toggle;
+            FolderPath.instance.Config.viewGrid = toggle;
         }
 
         if (toggle)

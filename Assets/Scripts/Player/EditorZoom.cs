@@ -32,8 +32,11 @@ public class EditorZoom : MonoBehaviour
             Camera.main.transform.position += direction * (1 - 1 / zoomFactor);
 
             Vector3 clampedPos = Camera.main.transform.position;
-            clampedPos.x = Mathf.Clamp(clampedPos.x, -15, 108 + 15);
-            clampedPos.y = Mathf.Clamp(clampedPos.y, -108 - 15, 10);
+
+            var floorSize = new Vector2(TextureManagement.instance.groundTexture.sprite.texture.width / 16f, TextureManagement.instance.groundTexture.sprite.texture.height / 16f);
+
+            clampedPos.x = Mathf.Clamp(clampedPos.x, -15, floorSize.x + 15);
+            clampedPos.y = Mathf.Clamp(clampedPos.y, -floorSize.y - 15, 10);
             Camera.main.transform.position = clampedPos;
 
             Camera.main.orthographicSize = newSize;
@@ -47,10 +50,12 @@ public class EditorZoom : MonoBehaviour
         {
             Vector3 currentPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Vector3 position = transform.position + getScreenPos - currentPos;
-
+            
+            var floorSize = new Vector2(TextureManagement.instance.groundTexture.sprite.texture.width / 16f, TextureManagement.instance.groundTexture.sprite.texture.height / 16f);
+            
             transform.position = new Vector3(
-                Mathf.Clamp(position.x, -15, 108 + 15),
-                Mathf.Clamp(position.y, -108 - 15, 10),
+                Mathf.Clamp(position.x, -15, floorSize.x + 15),
+                Mathf.Clamp(position.y, -floorSize.y - 15, 10),
                 transform.position.z
             );
         }

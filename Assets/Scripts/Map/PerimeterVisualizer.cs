@@ -24,7 +24,7 @@ public class PerimeterVisualizer : MonoBehaviour
             return;
         }
         
-        if (Input.GetKeyDown(KeyCode.Tab))
+        if (Input.GetKeyDown(KeyCode.Tab) && TileEditor.instance.currentTilemapLayer != 3)
         {
             foreach (GameObject child in perimeters)
             {

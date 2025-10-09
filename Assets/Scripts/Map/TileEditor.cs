@@ -13,7 +13,7 @@ public class TileEditor : MonoBehaviour
     [Range(1, 100)]
     public int selectedTileIndex;
 
-    private Vector3Int mousePos =>
+    public Vector3Int mousePos =>
         currentTilemap[currentTilemapLayer].WorldToCell(cam.ScreenToWorldPoint(Input.mousePosition));
 
     public bool placementMode; // True = Tile-Placement / False = Object-Placement
@@ -310,7 +310,14 @@ public class TileEditor : MonoBehaviour
             }
         }
         
-        ObjectEditor.instance.AreaDeleteObject(startAreaPos, mousePos, entries);
+        if (delete)
+        {
+            ObjectEditor.instance.AreaDeleteObject(startAreaPos, mousePos, entries);
+        }
+        else
+        {
+            UndoRedoManager.instance.SaveState(entries);
+        }
 
         startAreaPos = new();
     }

@@ -150,12 +150,16 @@ public class MapProperties : MonoBehaviour
         toggles[9].isOn = properties.Jobs.Metalshop;
     }
 
+    public TMP_Dropdown startingTileset;
+    
     public void CreateNewMap()
     {
         properties = new Properties();
         properties = defaultProperties.Clone();
         properties.Info.MapName = mapName.text;
-        properties.Info.Floor = "perks";
+        properties.Info.Floor = startingTileset.options[startingTileset.value].text;
+        properties.Info.Tileset = startingTileset.options[startingTileset.value].text;
+        properties.Info.Music = startingTileset.options[startingTileset.value].text;
         
         foreach (GameObject layer in ObjectEditor.instance.ObjectLayers)
         {

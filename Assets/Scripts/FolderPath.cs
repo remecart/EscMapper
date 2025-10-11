@@ -58,6 +58,7 @@ public class FolderPath : MonoBehaviour
         }
         else
         {
+            Config = new Config();
             UI.gameObject.SetActive(true);
         }
     }

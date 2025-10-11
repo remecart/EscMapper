@@ -23,7 +23,7 @@ public class DebugMenu : MonoBehaviour
     void UpdateDebug()
     {
         lines.Clear();
-        lines.Add($"EscMapper // v1.2.0");
+        lines.Add($"EscMapper // v1.2.1");
         lines.Add($" FPS: {(1f / Time.deltaTime).ToString("F2", CultureInfo.InvariantCulture)}");
         lines.Add($" Selected tile ID: {TileEditor.instance.selectedTileIndex} ({TileProperties.instance.currentProperties[TileEditor.instance.selectedTileIndex - 1]})");
         lines.Add($" Selected object ID: {ObjectEditor.instance.selectedObjectIndex} ({ObjectLookupTable.instance.objects[ObjectEditor.instance.selectedObjectIndex].name.Substring(ObjectLookupTable.instance.objects[ObjectEditor.instance.selectedObjectIndex].name.IndexOf("]") + 1).Trim().Replace("(Clone)", "")})");

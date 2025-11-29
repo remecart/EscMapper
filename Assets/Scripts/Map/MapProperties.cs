@@ -29,6 +29,9 @@ public class MapProperties : MonoBehaviour
     public bool loaded;
     public TMP_InputField mapName;
     public GameObject NewMapUI;
+    public bool official;
+
+    public TMP_Dropdown mapType;
     
     public bool IsEmpty()
     {
@@ -38,7 +41,7 @@ public class MapProperties : MonoBehaviour
     private void Start()
     {
         instance = this;
-
+        mapType.value = FolderPath.instance.Config.forYeeeetr;
         properties = new Properties();
     }
 
@@ -66,13 +69,13 @@ public class MapProperties : MonoBehaviour
             index =>
             {
                 properties.Info.Floor = dropdowns[3].options[index].text;
-                TextureManagement.instance.ReloadTextures();
+                TextureManagement.instance.ReloadTextures(MapProperties.instance.official);
             },
             index => properties.Info.MapType = dropdowns[4].options[index].text,
             index =>
             {
                 properties.Info.Tileset = dropdowns[5].options[index].text;
-                TextureManagement.instance.ReloadTextures();
+                TextureManagement.instance.ReloadTextures(MapProperties.instance.official);
             },
             index => properties.Info.Inmates = index,
             index => properties.Info.Guards = index,
@@ -120,18 +123,36 @@ public class MapProperties : MonoBehaviour
     }
 
 
-    private void LoadUIFromProperties()
+    private void LoadUIFromProperties(string map)
     {
         // Dropdowns
         dropdowns[0].value = dropdowns[0].options.FindIndex(opt => opt.text == properties.Info.RoutineSet);
         dropdowns[1].value = Mathf.Clamp(properties.Info.NPClvl - 1, 0, dropdowns[1].options.Count - 1);
-        dropdowns[2].value = dropdowns[2].options.FindIndex(opt => opt.text == properties.Info.Music);
-        dropdowns[3].value = dropdowns[3].options.FindIndex(opt => opt.text == properties.Info.Floor);
         dropdowns[4].value = dropdowns[4].options.FindIndex(opt => opt.text == properties.Info.MapType);
-        dropdowns[5].value = dropdowns[5].options.FindIndex(opt => opt.text == properties.Info.Tileset);
         dropdowns[6].value = Mathf.Clamp(properties.Info.Inmates, 0, dropdowns[6].options.Count - 1);
         dropdowns[7].value = Mathf.Clamp(properties.Info.Guards, 0, dropdowns[7].options.Count - 1);
 
+        if (!official)
+        {
+            dropdowns[2].enabled = true;
+            dropdowns[3].enabled = true;
+            dropdowns[5].enabled = true;
+            
+            dropdowns[2].value = dropdowns[2].options.FindIndex(opt => opt.text == properties.Info.Music);
+            dropdowns[3].value = dropdowns[3].options.FindIndex(opt => opt.text == properties.Info.Floor);
+            dropdowns[5].value = dropdowns[5].options.FindIndex(opt => opt.text == properties.Info.Tileset);
+        }
+        else
+        {
+            dropdowns[2].enabled = false;
+            dropdowns[3].enabled = false;
+            dropdowns[5].enabled = false;
+            
+            dropdowns[2].transform.GetChild(0).gameObject.GetComponent<TMP_Text>().text = map + " (official)";
+            dropdowns[3].transform.GetChild(0).gameObject.GetComponent<TMP_Text>().text = map + " (official)";
+            dropdowns[5].transform.GetChild(0).gameObject.GetComponent<TMP_Text>().text = map + " (official)";
+        }
+        
         // InputFields
         inputfields[0].text = properties.Info.MapName;
         inputfields[1].text = properties.Info.Warden;
@@ -170,9 +191,9 @@ public class MapProperties : MonoBehaviour
         }
         
         UndoRedoManager.instance.ClearEntries();
-        LoadUIFromProperties();
+        LoadUIFromProperties("");
         TileEditor.instance.ClearTiles();
-        TextureManagement.instance.ReloadTextures();
+        TextureManagement.instance.ReloadTextures(false);
         PropertiesUI();
         PerimeterVisualizer.instance.Visualize();
         
@@ -185,22 +206,39 @@ public class MapProperties : MonoBehaviour
         NewMapUI.SetActive(!NewMapUI.activeSelf);
     }
 
+    public void OpenLoadMapUI()
+    {
+        menu.SetActive(true);   
+    }
+
+    public GameObject menu;
 
     public void LoadMap()
     {
-        var filters = new[]
+        var filter = new ExtensionFilter();
+        var mapPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "The Escapists", "Custom Maps");
+        
+        if (mapType.value == 0)
         {
-            new ExtensionFilter("Project Files", "proj"),
-            new ExtensionFilter("Custom Map Files", "cmap"),
-            new ExtensionFilter("Official Map Files", "map")
-        };
+            filter = new ExtensionFilter("Project Files", "proj");
+        }
+        else if (mapType.value == 1)
+        {
+            filter = new ExtensionFilter("Custom Map Files", "cmap");
+        }
+        else if (mapType.value == 2)
+        {
+            filter = new ExtensionFilter("Official Map Files", "map");
+            mapPath = FolderPath.instance.Config.sourceFolderPath + "\\Data\\Maps";
+        }
         
-        var documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "The Escapists", "Custom Maps");
-        if (!Directory.Exists(documentsPath)) documentsPath = "";
+        menu.SetActive(false);   
         
-        var path = StandaloneFileBrowser.OpenFilePanel("Select File", documentsPath, filters, false)[0];
+        if (!Directory.Exists(mapPath)) mapPath = "";
+        
+        var path = StandaloneFileBrowser.OpenFilePanel("Select File", mapPath, new[] { filter }, false)[0];
         if (!File.Exists(path)) return;
-        
+
         properties = new Properties();
 
         TileEditor.instance.ClearTiles();
@@ -215,8 +253,17 @@ public class MapProperties : MonoBehaviour
 
         UndoRedoManager.instance.ClearEntries();
         Parser.LoadPrisonData(path, properties);
-        LoadUIFromProperties();
-        TextureManagement.instance.ReloadTextures();
+
+        official = path.Contains(".map");
+        
+        if (official)
+        {
+            properties.Info.Tileset = Path.GetFileNameWithoutExtension(path);
+            properties.Info.Floor = Path.GetFileNameWithoutExtension(path);
+        }
+
+        LoadUIFromProperties(properties.Info.Tileset);
+        TextureManagement.instance.ReloadTextures(official);
         MapManager.instance.LoadLevel();
         PropertiesUI();
         PerimeterVisualizer.instance.Visualize();
@@ -730,6 +777,7 @@ public class Info
     public int Guards;
     public int Inmates;
     public string Tileset;
+    public bool UseOfficialTextures;
     public string Floor;
     public string Music;
     public string MapType;

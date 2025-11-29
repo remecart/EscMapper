@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 1668866123676330609}
   - component: {fileID: 6437351122137051156}
   - component: {fileID: -8676256993079771126}
+  - component: {fileID: 3675810937046419624}
   m_Layer: 0
   m_Name: '[53] Ladder Down'
   m_TagString: Untagged
@@ -151,3 +152,18 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &3675810937046419624
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1548916103678875681}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59497ad21bb549346afe74a01d90762b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  up: 0
+  visual: {fileID: 3265625404545630858, guid: 347ef5472f557194aaf58fce029c5844, type: 3}
+  thing: {fileID: 0}

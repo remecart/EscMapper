@@ -299,7 +299,7 @@ public class ZoneEditor : MonoBehaviour
         {
             if (isDragging)
             {
-                CreateNewZone();
+                CreateZoneData();
                 isDragging = false;
             }
 
@@ -340,7 +340,7 @@ public class ZoneEditor : MonoBehaviour
         selectedZone = null;
     }
     
-    public void CreateNewZone()
+    public void CreateZoneData()
     {
         var endAreaPos = mousePos;
     
@@ -350,6 +350,13 @@ public class ZoneEditor : MonoBehaviour
         float xPos = ((float)startPos.x + (float)endAreaPos.x) / 2 + 0.5f;
         float yPos = ((float)startPos.y + (float)endAreaPos.y) / 2 + 0.5f;
 
+        position = new Vector2(xPos, yPos);
+        size = new Vector2(width, height);
+        window.SetActive(true);
+    }
+
+    public void CreateZone()
+    {
         var go = Instantiate(ZonePrefab);
         go.transform.SetParent(ZoneParent.transform);
 
@@ -357,9 +364,17 @@ public class ZoneEditor : MonoBehaviour
 
         go.name = dropdown.options[selectedZoneIndex].text;
 
-        go.transform.position = new Vector3(xPos, yPos, 0);
-        go.transform.localScale = new Vector3(width, height, 1);
-        
+        go.transform.position = new Vector3(position.x, position.y, 0);
+        go.transform.localScale = new Vector3(size.x, size.y, 1);
+
+        window.SetActive(false);
         RefreshAvailableZones();
     }
+
+    public GameObject window;
+
+    private Vector2 position;
+    private Vector2 size;
+    
+    
 }

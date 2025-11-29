@@ -8,8 +8,9 @@ using System.Linq;
 using ThreeDISevenZeroR.UnityGifDecoder;
 using TMPro;
 using System.Diagnostics;
+using System.Text;
 using Debug = UnityEngine.Debug;
-
+using EscapistsMapTools.Encryption;
 public class TextureManagement : MonoBehaviour
 {
     public List<Texture2D> loadedTiles;
@@ -34,7 +35,7 @@ public class TextureManagement : MonoBehaviour
         
         if (Input.GetKeyDown(KeyCode.R))
         {
-            ReloadTextures();
+            ReloadTextures(MapProperties.instance.official);
         }
     }
 
@@ -86,7 +87,7 @@ public class TextureManagement : MonoBehaviour
     }
     
 
-    private void GetCusTextures()
+    public void GetCusTextures()
     {
         // TE1 actually loads whatever textures you want as long as you follow the naming scheme ground_cus_<mapName> so here is me adding support for infinite ground layers
         // The same technically works with tilesets but ingame the tiles will not have any collisions which is why I didn't implement it
@@ -131,14 +132,31 @@ public class TextureManagement : MonoBehaviour
         grounds.RefreshShownValue();
     }
 
+    public TMP_Text tileset;
+    public TMP_Text floor;
+
     // ReSharper disable Unity.PerformanceAnalysis
-    public void ReloadTextures()
+    public void ReloadTextures(bool official)
     {
-        var path = Path.Combine(FolderPath.instance.Config.sourceFolderPath, "Data", "images", "custom");
-        GetCusTextures();
+        var path = "";
+        if (official == false)
+        {
+            path = Path.Combine(FolderPath.instance.Config.sourceFolderPath, "Data", "images", "custom");
+            tileset.text = "Tileset (Custom)";
+            floor.text = "Floor (Custom)";
+
+        }
+        else
+        {
+            path = Path.Combine(FolderPath.instance.Config.sourceFolderPath, "Data", "images");
+            tileset.text = "Tileset (Official)";
+            floor.text = "Floor (Official)";
+        }
+        
+        if (!official) GetCusTextures();
         StartCoroutine(LoadTileset(MapProperties.instance.properties.Info.Tileset, path));
         StartCoroutine(LoadGround(MapProperties.instance.properties.Info.Floor, path));
-        StartCoroutine(LoadUnderground(path));
+        StartCoroutine(LoadUnderground(Path.Combine(FolderPath.instance.Config.sourceFolderPath, "Data", "images", "custom")));
 
         ReloadObjectTextures.instance.ReloadTextures();
         TileProperties.instance.GetProperties();
@@ -166,7 +184,8 @@ public class TextureManagement : MonoBehaviour
     
     private IEnumerator LoadGround(string floor, string path)
     {
-        var file = $"ground_cus_{floor}.gif";
+        var cus = MapProperties.instance.official ? "" : "_cus";
+        var file = $"ground{cus}_{floor}.gif";
         var fullPath = Path.Combine(path, file);
 
         if (!File.Exists(fullPath))
@@ -174,8 +193,32 @@ public class TextureManagement : MonoBehaviour
             Debug.LogError($"[WARNING] TextureManagement.cs - {file} does not exist!");
             yield break;
         }
+        
+        // Renaming the file extension of a png to gif allows to keep low opacity pixels which enables the use of "invisible" obstacles. This unfortunately means that files can either be png or gif and I have to write a very dumb workaround to load it correctly.
+        byte[] fileBytes = File.ReadAllBytes(fullPath);
+        
+        bool IsGif(byte[] data)
+        {
+            return data.Length >= 6 &&
+                   data[0] == 'G' &&
+                   data[1] == 'I' &&
+                   data[2] == 'F' &&
+                   data[3] == '8' &&
+                   (data[4] == '7' || data[4] == '9') &&
+                   data[5] == 'a';
+        }
 
-        var texture = LoadFirstGifFrame(fullPath);
+        Texture2D texture = new Texture2D(2, 2);
+
+        if (IsGif(fileBytes))
+        {
+            texture = LoadFirstGifFrame(fileBytes);
+        }
+        else
+        {
+            texture.LoadImage(fileBytes);
+        }
+
         if (FolderPath.instance.cropGroundTex.isOn) texture = CropTexture(texture, 1728, 1728);
         
 
@@ -196,7 +239,7 @@ public class TextureManagement : MonoBehaviour
             yield break;
         }
 
-        var texture = LoadFirstGifFrame(fullPath); 
+        var texture = LoadFirstGifFrame(File.ReadAllBytes(fullPath)); 
         texture = CropTexture(texture, 1728, 1728);
         
         texture.filterMode = FilterMode.Point;
@@ -204,9 +247,10 @@ public class TextureManagement : MonoBehaviour
             new Vector2(0, 1), 16);
     }
     
-    Texture2D LoadFirstGifFrame(string path)
+    Texture2D LoadFirstGifFrame(byte[] gifBytes)
     {
-        using (var stream = new GifStream(File.OpenRead(path)))
+        using (var memoryStream = new MemoryStream(gifBytes))
+        using (var stream = new GifStream(memoryStream))
         {
             while (stream.HasMoreData)
             {
@@ -235,9 +279,10 @@ public class TextureManagement : MonoBehaviour
     private IEnumerator LoadTileset(string tileset, string path)
     {
         loadedTiles.Clear();
-        var file = $"tiles_cus_{tileset}.gif";
+        var cus = MapProperties.instance.official ? "" : "_cus";
+        var file = $"tiles{cus}_{tileset}.gif";
         var fullPath = Path.Combine(path, file);
-
+        
         if (!File.Exists(fullPath))
         {
             Debug.LogError($"[WARNING] TextureManagement.cs - {file} does not exist!");
@@ -249,9 +294,39 @@ public class TextureManagement : MonoBehaviour
         }
         else
         {
-            byte[] gifBytes = File.ReadAllBytes(fullPath);
-            var texture = LoadFirstGifFrame(fullPath);
-            SpitTextureToTiles(texture);
+            // Renaming the file extension of a png to gif allows to keep low opacity pixels which enables the use of "invisible" obstacles. This unfortunately means that files can either be png or gif and I have to write a very dumb workaround to load it correctly.
+            byte[] fileBytes = File.ReadAllBytes(fullPath);
+
+            if (MapProperties.instance.official)
+            {
+                string key = "mothking";
+                BlowfishCompat decryptionBlowfish = new BlowfishCompat(key);
+                fileBytes = decryptionBlowfish.Decrypt(fileBytes);
+            }
+                    
+            bool IsGif(byte[] data)
+            {
+                return data.Length >= 6 &&
+                       data[0] == 'G' &&
+                       data[1] == 'I' &&
+                       data[2] == 'F' &&
+                       data[3] == '8' &&
+                       (data[4] == '7' || data[4] == '9') &&
+                       data[5] == 'a';
+            }
+
+            Texture2D texture = new Texture2D(2, 2);
+
+            if (IsGif(fileBytes))
+            {
+                texture = LoadFirstGifFrame(fileBytes);
+            }
+            else
+            {
+                texture.LoadImage(fileBytes);
+            }
+            
+            SpitTextureToTiles(texture, IsGif(fileBytes));
         }
 
         foreach (var tilemap in TileEditor.instance.currentTilemap)
@@ -279,20 +354,12 @@ public class TextureManagement : MonoBehaviour
         yield break;
     }
     
-    private void SpitTextureToTiles(Texture2D texture)
+    private void SpitTextureToTiles(Texture2D texture, bool encode)
     {
-        texture.EncodeToPNG();
-        var tileRes = texture.width / 4 == texture.height / 25 ? texture.width / 4 : 0;
-
-        if (tileRes == 0)
-        {
-            Debug.LogWarning(
-                $"[WARNING] TextureManagement.cs - Resolution must match an aspect ratio of 4:25 and be dividable by 16! => Tileset not loaded!");
-            return;
-        }
-
+        if (encode) texture.EncodeToPNG();
+        var tileRes = 16;
+        
         // Inverted x/y forlooping for splitting the texture because TE1 does it :/
-
         for (var x = 0; x < 4; x++)
         {
             for (var y = 0; y < 25; y++)
@@ -374,7 +441,7 @@ public class TileTextureInspectorButton : Editor
 
         if (GUILayout.Button("Reload Textures"))
         {
-            script.ReloadTextures();
+            script.ReloadTextures(MapProperties.instance.official);
         }
     }
 }

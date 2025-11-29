@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 599116357113138404}
   - component: {fileID: 4683030423282966300}
   - component: {fileID: 7596222672840232502}
+  - component: {fileID: 1175429004626427235}
   m_Layer: 0
   m_Name: '[52] Ladder Up'
   m_TagString: Untagged
@@ -151,3 +152,18 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &1175429004626427235
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6784486009313531495}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59497ad21bb549346afe74a01d90762b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  up: 1
+  visual: {fileID: 3265625404545630858, guid: 347ef5472f557194aaf58fce029c5844, type: 3}
+  thing: {fileID: 0}

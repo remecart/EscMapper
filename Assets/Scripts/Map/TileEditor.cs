@@ -14,7 +14,7 @@ public class TileEditor : MonoBehaviour
     public int selectedTileIndex;
 
     public Vector3Int mousePos =>
-        currentTilemap[currentTilemapLayer].WorldToCell(cam.ScreenToWorldPoint(Input.mousePosition));
+        currentTilemap[Mathf.Clamp(currentTilemapLayer, 0, 3)].WorldToCell(cam.ScreenToWorldPoint(Input.mousePosition));
 
     public bool placementMode; // True = Tile-Placement / False = Object-Placement
 
@@ -325,6 +325,7 @@ public class TileEditor : MonoBehaviour
     {
         var pos = mousePos;
         var tile = currentTilemap[currentTilemapLayer].GetTile(pos) as CustomTile;
+
 
         if (!tile && delete) return;
         if (tile && tile.id == selectedTileIndex && !delete)

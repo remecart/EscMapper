@@ -22,11 +22,6 @@ public class MapValidation : MonoBehaviour
 
     public void Update()
     {
-        if (Input.GetKeyDown(KeyCode.H))
-        {
-            ValidateMap();
-        }
-        
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             show = false;

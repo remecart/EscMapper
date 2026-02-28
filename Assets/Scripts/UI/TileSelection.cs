@@ -33,12 +33,14 @@ public class TileSelection : MonoBehaviour
     {
         for (int i = 1; i <= transform.childCount; i++)
         {
-            int convertedId = ConvertXtoY(i, 4, 25) - 1;
-            if (convertedId >= 0 && convertedId < TextureManagement.instance.loadedTiles.Count)
+            if (i >= 0 && i <= 100)
             {
+                int convertedId = ConvertXtoY(i, 4, 25) - 1;
                 transform.GetChild(i - 1).gameObject.GetComponent<RawImage>().texture =
                     TextureManagement.instance.loadedTiles[convertedId];
             }
+            else if (transform.GetChild(i - 1).gameObject.name != "BLANK" && i > 100) transform.GetChild(i - 1).gameObject.GetComponent<RawImage>().texture =
+                TextureManagement.instance.loadedTiles[int.Parse(transform.GetChild(i - 1).gameObject.name) - 1];
         }
     }
     

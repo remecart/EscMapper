@@ -4,6 +4,7 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
+using UnityEngine.Tilemaps;
 
 public class ObjectEditor : MonoBehaviour
 {
@@ -27,6 +28,7 @@ public class ObjectEditor : MonoBehaviour
     }
 
     public void ChangeSelectedObject(int id) {
+        SoundManager.instance.PlaySound("Button");
         selectedObjectIndex = id;
         TileEditor.instance.placementMode = false;
     }
@@ -134,35 +136,42 @@ public class ObjectEditor : MonoBehaviour
         int minY = Mathf.Min(startPos.y, endPos.y);
         int maxY = Mathf.Max(startPos.y, endPos.y);
 
+        List<GameObject> toDelete = new List<GameObject>();
+        
+        var gridTilemap = TileEditor.instance.currentTilemap[currentTilemapLayer].GetComponent<Tilemap>();
+
         foreach (Transform child in ObjectLayers[currentTilemapLayer].transform)
         {
-            // Convert world position to grid position
-            Vector3Int gridPos = Vector3Int.FloorToInt(child.transform.position);
+            // Grid position statt FloorToInt
+            Vector3Int gridPos = gridTilemap.WorldToCell(child.position);
 
             if (gridPos.x >= minX && gridPos.x <= maxX &&
                 gridPos.y >= minY && gridPos.y <= maxY)
             {
                 var co = child.GetComponent<CustomObject>();
-                var entry = new UndoEntry
+
+                entries.Add(new UndoEntry
                 {
                     isTile = false,
                     id = co.id,
                     layer = currentTilemapLayer,
-                    position = child.position // exact world position
-                };
-                
-                entries.Add(entry);
-                    
-                Destroy(child.gameObject);
+                    position = child.position
+                });
+
+                toDelete.Add(child.gameObject);
             }
         }
 
+        // Sicher löschen
+        foreach (var go in toDelete)
+            DestroyImmediate(go);
+
         if (paste)
-        {
             PasteObjects(entries);
-        }
-        else UndoRedoManager.instance.SaveState(entries);
+        else
+            UndoRedoManager.instance.SaveState(entries);
     }
+
     
     public List<UndoEntry> copyEntries = new List<UndoEntry>();
     private Vector3 copyAnchorOffset;
@@ -203,19 +212,18 @@ public class ObjectEditor : MonoBehaviour
     
     public void PasteObjects(List<UndoEntry> entries)
     {
-        if (entries.Count == 0) return;
-        
+        if (copyEntries.Count == 0) return;
+
         Vector3 mouseWorldAnchor = new Vector3(mousePos.x + 0.5f, mousePos.y + 0.5f, 0);
 
         foreach (var entry in copyEntries)
         {
-            Vector3 newPos = mouseWorldAnchor + entry.position; // entry.position is relative to original endPos
-            
-            
-            if (newPos.x < 0 || newPos.y > 0) continue;
+            // entry.position ist RELATIV
+            Vector3 newPos = mouseWorldAnchor + entry.position;
 
             GameObject prefab = ObjectLookupTable.instance.objects[entry.id];
             GameObject go = Instantiate(prefab);
+
             go.transform.SetParent(ObjectLayers[entry.layer].transform);
             go.transform.position = newPos;
 
@@ -232,11 +240,13 @@ public class ObjectEditor : MonoBehaviour
         }
 
         UndoRedoManager.instance.SaveState(entries);
-        RemoveDuplicateObjects();
+        RemoveDuplicateObjects(); // optional, aber jetzt sicherer
     }
     
     void DeleteObject()
     {
+        if (TileEditor.instance.startAreaPos != new Vector3Int()) return;
+        
         Vector2 mouseWorldPos = cam.ScreenToWorldPoint(Input.mousePosition);
         Collider2D hit = Physics2D.OverlapPoint(mouseWorldPos);
 
@@ -252,8 +262,10 @@ public class ObjectEditor : MonoBehaviour
                     position = co.transform.position
                 }
             });
+            
+            SoundManager.instance.PlaySound("Delete");
 
-            Destroy(co.gameObject);
+            DestroyImmediate(co.gameObject);
             TileEditor.instance.tempPos = mousePos;
         }
         
@@ -277,27 +289,32 @@ public class ObjectEditor : MonoBehaviour
     
     void PlaceObject(Objects obj = null)
     {
-        Vector3 worldPos = new Vector3(mousePos.x + 0.5f, mousePos.y + 0.5f, 0);
-
-        float parsedX, parsedY;
-
-        float.TryParse(OffsetX.text, out parsedX);
-        float.TryParse(OffsetY.text, out parsedY);
+        if (TileEditor.instance.startAreaPos != new Vector3Int()) return;
         
-        Collider2D hit = Physics2D.OverlapPoint(worldPos);
+        float.TryParse(OffsetX.text, out float parsedX);
+        float.TryParse(OffsetY.text, out float parsedY);
 
+        Vector3 basePos = new Vector3(mousePos.x + 0.5f, mousePos.y + 0.5f, 0);
+
+        // Erst prüfen, ob dort schon ein Objekt liegt
+        Collider2D hit = Physics2D.OverlapPoint(basePos);
         if (hit != null && hit.TryGetComponent(out CustomObject co2))
         {
-            if (hit.transform.parent.parent == ObjectLayers[TileEditor.instance.currentTilemapLayer].transform) return;
+            if (hit.transform.IsChildOf(ObjectLayers[currentTilemapLayer].transform))
+                return;
         }
 
         GameObject go = Instantiate(currentObject);
         go.transform.SetParent(ObjectLayers[currentTilemapLayer].transform);
 
         var co = go.GetComponent<CustomObject>();
-        Vector3 finalPos = new Vector3(mousePos.x + co.offset.x + 0.5f + parsedX, mousePos.y + co.offset.y + 0.5f + parsedY, 0);
+
+        Vector3 finalPos = basePos + new Vector3(co.offset.x + parsedX, co.offset.y + parsedY, 0);
         go.transform.position = finalPos;
+
         go.GetComponent<SpriteRenderer>().sortingOrder = currentTilemapLayer * 50 + 25;
+
+        SoundManager.instance.PlaySound("Place");
 
         UndoRedoManager.instance.SaveState(new List<UndoEntry> {
             new UndoEntry {
@@ -310,7 +327,6 @@ public class ObjectEditor : MonoBehaviour
 
         RemoveDuplicateObjects();
     }
-    
     public void RemoveDuplicateObjects(float threshold = 0.01f)
     {
         foreach (GameObject layerObj in ObjectLayers)
@@ -350,7 +366,7 @@ public class ObjectEditor : MonoBehaviour
                     });
                 }
 
-                Destroy(dup.gameObject);
+                DestroyImmediate(dup.gameObject);
             }
         }
     }

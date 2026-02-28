@@ -23,9 +23,10 @@ public class DebugMenu : MonoBehaviour
     void UpdateDebug()
     {
         lines.Clear();
-        lines.Add($"EscMapper // v1.2.1");
+        lines.Add($"EscMapper // v1.4.0");
         lines.Add($" FPS: {(1f / Time.deltaTime).ToString("F2", CultureInfo.InvariantCulture)}");
-        lines.Add($" Selected tile ID: {TileEditor.instance.selectedTileIndex} ({TileProperties.instance.currentProperties[TileEditor.instance.selectedTileIndex - 1]})");
+        if (TileEditor.instance.selectedTileIndex <= 100) lines.Add($" Selected tile ID: {TileEditor.instance.selectedTileIndex} ({TileProperties.instance.currentProperties[TileEditor.instance.selectedTileIndex - 1]})");
+            else lines.Add($" Selected tile ID: {TileEditor.instance.selectedTileIndex}");
         lines.Add($" Selected object ID: {ObjectEditor.instance.selectedObjectIndex} ({ObjectLookupTable.instance.objects[ObjectEditor.instance.selectedObjectIndex].name.Substring(ObjectLookupTable.instance.objects[ObjectEditor.instance.selectedObjectIndex].name.IndexOf("]") + 1).Trim().Replace("(Clone)", "")})");
         string mode = TileEditor.instance.placementMode == true ? "Tile" : "Object";
         lines.Add($" Placement mode: {mode}");

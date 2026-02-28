@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 using File = System.IO.File;
 
 public class MapManager : MonoBehaviour
@@ -38,7 +39,9 @@ public class MapManager : MonoBehaviour
         if (currentLayer != Mathf.Clamp(currentLayer + change, 0, 4))
         {
             currentLayer = Mathf.Clamp(currentLayer + change, 0, 4);
-
+            
+            SoundManager.instance.PlaySound("Toggle");
+            
             foreach (var layer in Layers)
             {
                 layer.gameObject.SetActive(false);
@@ -46,6 +49,18 @@ public class MapManager : MonoBehaviour
 
             Layers[currentLayer].SetActive(true);
             if (currentLayer > 1) Layers[1].SetActive(true);
+            
+            if (currentLayer == 0)
+            {
+                Tilemap src = TileEditor.instance.currentTilemap[1].GetComponent<Tilemap>();
+                Tilemap dst = Layers[0].transform.GetChild(3).GetComponent<Tilemap>();
+
+                dst.ClearAllTiles();
+
+                BoundsInt bounds = src.cellBounds;
+                TileBase[] tiles = src.GetTilesBlock(bounds);
+                dst.SetTilesBlock(bounds, tiles);
+            }
 
             text.text = Layers[currentLayer].name;
         }
@@ -53,6 +68,7 @@ public class MapManager : MonoBehaviour
 
     public void ReloadCustomTiles()
     {
+        tiles.Clear();
         for (int i = 0; i < TextureManagement.instance.loadedTiles.Count + 1; i++)
         {
             var tile = ScriptableObject.CreateInstance<CustomTile>();
@@ -86,6 +102,16 @@ public class MapManager : MonoBehaviour
                         Position = new Vector2Int(x, y),
                         Layer = i
                     };
+
+                    if (entry.Id > 100 && entry.Id % 2 == 0)
+                    {
+                        entry.Id = (entry.Id - 100) / 2 + 100;
+                    }
+                    else if (entry.Id > 100 && entry.Id % 2 == 1)
+                    {
+                        entry.Id = (entry.Id - 99) / 2 + 50;
+                    }
+                    
                     MapProperties.instance.properties.Tiles.Add(entry);
                 }
             }
@@ -129,7 +155,20 @@ public class MapManager : MonoBehaviour
                     continue;
                 }
 
-                TileEditor.instance.currentTilemap[tile.Layer].SetTile((Vector3Int)tile.Position, tiles[tile.Id]);
+                var id = tile.Id;
+                
+                // For Shehelly
+                if (tile.Id > 100 && tile.Layer != 2)
+                {
+                    id = (tile.Id - 100) * 2 + 100;
+                }
+                
+                else if (tile.Id > 50 && tile.Layer == 2)
+                {
+                    id = (tile.Id - 50) * 2 - 1 + 100;
+                }
+
+                TileEditor.instance.currentTilemap[tile.Layer].SetTile((Vector3Int)tile.Position, tiles[id]);
             }
         }
 

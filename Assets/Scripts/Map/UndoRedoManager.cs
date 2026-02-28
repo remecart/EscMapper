@@ -20,15 +20,74 @@ public class UndoRedoManager : MonoBehaviour
         instance = this;
     }
 
+    private float undoDelay = 0.5f; // delay before repeat starts
+    private float redoDelay = 0.5f;
+    private float undoRepeatRate = 0.05f; // repeat speed
+    private float redoRepeatRate = 0.05f;
+
+    private float undoTimer = 0f;
+    private float redoTimer = 0f;
+    private bool undoHeld = false;
+    private bool redoHeld = false;
+
     public void Update()
     {
-        if ((Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)))
-        {
-            if (Input.GetKeyDown(KeyCode.Z))
-                Undo();
+        bool ctrl = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
 
-            if (Input.GetKeyDown(KeyCode.Y))
-                Redo();
+        if (ctrl)
+        {
+            // Undo
+            if (Input.GetKey(KeyCode.Z))
+            {
+                if (!undoHeld)
+                {
+                    Undo();
+                    undoHeld = true;
+                    undoTimer = undoDelay;
+                }
+                else
+                {
+                    undoTimer -= Time.deltaTime;
+                    if (undoTimer <= 0f)
+                    {
+                        Undo();
+                        undoTimer = undoRepeatRate;
+                    }
+                }
+            }
+            else
+            {
+                undoHeld = false;
+            }
+
+            // Redo
+            if (Input.GetKey(KeyCode.Y))
+            {
+                if (!redoHeld)
+                {
+                    Redo();
+                    redoHeld = true;
+                    redoTimer = redoDelay;
+                }
+                else
+                {
+                    redoTimer -= Time.deltaTime;
+                    if (redoTimer <= 0f)
+                    {
+                        Redo();
+                        redoTimer = redoRepeatRate;
+                    }
+                }
+            }
+            else
+            {
+                redoHeld = false;
+            }
+        }
+        else
+        {
+            undoHeld = false;
+            redoHeld = false;
         }
     }
 
@@ -105,6 +164,7 @@ public class UndoRedoManager : MonoBehaviour
         }
 
         redoBatch.Push(redoGroup);
+        SoundManager.instance.PlaySound("Undo");
     }
     
     public void Redo()
@@ -152,6 +212,7 @@ public class UndoRedoManager : MonoBehaviour
         }
 
         undoBatch.Push(undoGroup);
+        SoundManager.instance.PlaySound("Redo");
     }
 
     private GameObject FindObjectAtPosition(Vector3 position, int layer)

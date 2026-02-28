@@ -10,7 +10,7 @@ public class TileEditor : MonoBehaviour
     public List<Tilemap> currentTilemap;
     
     public int currentTilemapLayer => MapManager.instance.currentLayer;
-    [Range(1, 100)]
+    // [Range(1, 100)]
     public int selectedTileIndex;
 
     public Vector3Int mousePos =>
@@ -27,8 +27,11 @@ public class TileEditor : MonoBehaviour
 
     public void ChangeSelectedTile(int newSelectedTileIndex)
     {
-        selectedTileIndex = TileSelection.instance.ConvertXtoY(newSelectedTileIndex, 4, 25);
+        if (newSelectedTileIndex <= 100)
+            selectedTileIndex = TileSelection.instance.ConvertXtoY(newSelectedTileIndex, 4, 25);
+        else selectedTileIndex = newSelectedTileIndex;
         placementMode = true;
+        SoundManager.instance.PlaySound("Button");
         TileSelection.instance.UpdateBox();
     }
 
@@ -112,6 +115,7 @@ public class TileEditor : MonoBehaviour
             if (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonDown(1))
             {
                 startAreaPos = mousePos;
+                SoundManager.instance.PlaySound("Click");
             }
             else if (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonUp(1) && startAreaPos != new Vector3Int())
             {
@@ -134,6 +138,7 @@ public class TileEditor : MonoBehaviour
             if (Input.GetMouseButtonDown(0) && startCopyPos == new Vector3Int())
             {
                 startCopyPos = mousePos;
+                SoundManager.instance.PlaySound("Click");
             }
             if (Input.GetMouseButtonUp(0) && endCopyPos == new Vector3Int())
             {
@@ -179,6 +184,7 @@ public class TileEditor : MonoBehaviour
             if (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonDown(0))
             {
                 startAreaPos = mousePos;
+                SoundManager.instance.PlaySound("Click");
             }
             else if (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonUp(0) && startAreaPos != new Vector3Int())
             {
@@ -211,6 +217,8 @@ public class TileEditor : MonoBehaviour
                 copiedIds.Add(tileId);
             }
         }
+        
+        SoundManager.instance.PlaySound("Copy");
     }
 
     // ReSharper disable Unity.PerformanceAnalysis
@@ -260,6 +268,7 @@ public class TileEditor : MonoBehaviour
             }
         }
         
+        SoundManager.instance.PlaySound("Paste");
         ObjectEditor.instance.AreaDeleteObject(new Vector3Int(pasteStartX, pasteStartY, 0), new Vector3Int(pasteStartX + width, pasteStartY + height, 0), entries, true);
     }
     
@@ -285,6 +294,8 @@ public class TileEditor : MonoBehaviour
         var startX = Mathf.Min(startAreaPos.x, mousePos.x);
         var startY = Mathf.Min(startAreaPos.y, mousePos.y);
         
+
+        
         var entries = new List<UndoEntry>();
         
         for (int x = 0; x <= width; x++)
@@ -304,19 +315,27 @@ public class TileEditor : MonoBehaviour
                     position = pos
                 };
                 entries.Add(entry);
-                
-                if (delete) currentTilemap[currentTilemapLayer].SetTile(pos, null);
-                else currentTilemap[currentTilemapLayer].SetTile(pos, CurrentTile);
+
+                if (delete)
+                {
+                    currentTilemap[currentTilemapLayer].SetTile(pos, null);
+                }
+                else
+                {
+                    currentTilemap[currentTilemapLayer].SetTile(pos, CurrentTile);
+                }
             }
         }
         
         if (delete)
         {
             ObjectEditor.instance.AreaDeleteObject(startAreaPos, mousePos, entries);
+            SoundManager.instance.PlaySound("Delete");
         }
         else
         {
             UndoRedoManager.instance.SaveState(entries);
+            SoundManager.instance.PlaySound("Place");
         }
 
         startAreaPos = new();
@@ -351,11 +370,13 @@ public class TileEditor : MonoBehaviour
             if (pos != tempPos)
             {
                 currentTilemap[currentTilemapLayer].SetTile(pos, null);
+                SoundManager.instance.PlaySound("Delete");
             }
         }
         else
         {
             currentTilemap[currentTilemapLayer].SetTile(pos, CurrentTile);
+            SoundManager.instance.PlaySound("Place");
         }
     }
 

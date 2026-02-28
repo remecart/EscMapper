@@ -8,6 +8,12 @@ TagManager:
   - Zone
   - Hoverable
   - Ladders
+  - Button
+  - ObjectPanel
+  - Menu
+  - Black
+  - Object
+  - NOSOUND
   layers:
   - Default
   - TransparentFX

@@ -54,23 +54,23 @@ public class MapValidation : MonoBehaviour
         if (properties.Info.Warden == string.Empty) LogError(count++, "No warden name!");
         if (properties.Info.Intro == string.Empty) LogError(count++, "No warden note!");
         if (GetActiveJobs(properties) < 3) LogError(count++, "Needs a minimum of three jobs!");
-        if (GetActiveJobs(properties) > properties.Info.Inmates) LogError(count++, "Too many jobs!");
+        if (GetActiveJobs(properties) > properties.Info.Inmates - 1) LogError(count++, "Too many jobs!");
 
         if (GetObjectsOfType(54) + GetObjectsOfType(111) != 1) LogError(count++, "Map needs ONE player bed!");
         if (GetObjectsOfType(55) != 1) LogError(count++, "No player desk!");
-        if (GetObjectsOfType(1) + GetObjectsOfType(110) < properties.Info.Inmates)
+        if (GetObjectsOfType(1) + GetObjectsOfType(110) < properties.Info.Inmates - 1)
             LogError(count++,
                 $"Needs {properties.Info.Inmates - GetObjectsOfType(1) - GetObjectsOfType(110)} more prisoner beds!");
         if (GetObjectsOfType(9) < properties.Info.Inmates)
             LogError(count++, $"Needs {properties.Info.Inmates - GetObjectsOfType(9)} more prisoner desks!");
 
-        if (GetObjectsOfType(16) < properties.Info.Inmates)
+        if (GetObjectsOfType(16) < properties.Info.Inmates - 1)
             LogError(count++,
                 $"Needs {properties.Info.Inmates - GetObjectsOfType(16)} more prisoner rollcall waypoints!");
-        if (GetObjectsOfType(21) < properties.Info.Inmates)
+        if (GetObjectsOfType(21) < properties.Info.Inmates - 1)
             LogError(count++,
                 $"Needs {properties.Info.Inmates - GetObjectsOfType(21)} more prisoner shower waypoints!");
-        if (GetObjectsOfType(2) < properties.Info.Inmates)
+        if (GetObjectsOfType(2) < properties.Info.Inmates - 1)
             LogError(count++, $"Needs {properties.Info.Inmates - GetObjectsOfType(2)} more canteen chairs!");
         if (GetObjectsOfType(19) < 5)
             LogError(count++, $"Needs {5 - GetObjectsOfType(19)} more guard roam waypoints!");
@@ -100,7 +100,7 @@ public class MapValidation : MonoBehaviour
         var gymEquipmentCount = GetObjectsOfType(7) + GetObjectsOfType(8) + GetObjectsOfType(102) +
                                 GetObjectsOfType(91) + GetObjectsOfType(90) + GetObjectsOfType(96) +
                                 GetObjectsOfType(97) + GetObjectsOfType(98);
-        if (gymEquipmentCount < properties.Info.Inmates)
+        if (gymEquipmentCount < properties.Info.Inmates - 1)
             LogError(count++, $"Needs {properties.Info.Inmates - gymEquipmentCount} workout equipments!");
         if (GetObjectsOfType(11) < 3) LogError(count++, $"Needs at leat 3 canten food trays!");
 

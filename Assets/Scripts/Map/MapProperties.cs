@@ -32,6 +32,7 @@ public class MapProperties : MonoBehaviour
     public bool official;
 
     public TMP_Dropdown mapType;
+    public TMP_Dropdown exportType;
     
     public bool IsEmpty()
     {
@@ -77,8 +78,8 @@ public class MapProperties : MonoBehaviour
                 properties.Info.Tileset = dropdowns[5].options[index].text;
                 TextureManagement.instance.ReloadTextures(MapProperties.instance.official);
             },
-            index => properties.Info.Inmates = index,
-            index => properties.Info.Guards = index,
+            index => properties.Info.Inmates = index + 5,
+            index => properties.Info.Guards = index + 5,
             index => properties.Jobs.StartingJob = dropdowns[8].options[index].text
         };
 
@@ -175,6 +176,7 @@ public class MapProperties : MonoBehaviour
     
     public void CreateNewMap()
     {
+        official = false;
         properties = new Properties();
         properties = defaultProperties.Clone();
         properties.Info.MapName = mapName.text;
@@ -281,21 +283,45 @@ public class MapProperties : MonoBehaviour
         properties.Info.Custom = -1;
         properties.Info.Rdy = 0;
         properties.Info.Version = "";
-        Parser.SavePrisonProperties(path, properties);
+        Parser.SavePrisonProperties(path, properties, false);
     }
     
     public void ExportMap()
     {
         var documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "The Escapists", "Custom Maps");
         if (!Directory.Exists(documentsPath)) documentsPath = "";
-        var path = StandaloneFileBrowser.SaveFilePanel("Save Project", documentsPath, properties.Info.MapName, "cmap");
+
+        if (exportType.value == 0)
+        {
+            var path = "";
+            if (official) path = StandaloneFileBrowser.SaveFilePanel("Save Project", documentsPath, properties.Info.MapName, "map");
+            else path = StandaloneFileBrowser.SaveFilePanel("Save Project", documentsPath, properties.Info.MapName, "cmap");
+            MapManager.instance.SaveLevel();
+            properties.Info.Custom = 2;
+            properties.Info.Rdy = 1;
+            properties.Info.Version = GenerateHexKey();
+            Parser.SavePrisonProperties(path, properties, official);
+        }
+        else if (exportType.value == 1)
+        {
+            var path = StandaloneFileBrowser.SaveFilePanel("Save Project", documentsPath, properties.Info.MapName, "json");
+            MapManager.instance.SaveLevel();
+            properties.Info.Custom = 2;
+            properties.Info.Rdy = 1;
+            properties.Info.Version = GenerateHexKey();
+            File.WriteAllText(path, JsonUtility.ToJson(properties, true));
+        }
+        if (exportType.value == 2)
+        {
+            var path = StandaloneFileBrowser.SaveFilePanel("Save Project", documentsPath, properties.Info.MapName, "cmap");
+            MapManager.instance.SaveLevel();
+            properties.Info.Custom = 2;
+            properties.Info.Rdy = 1;
+            properties.Info.Version = GenerateHexKey();
+            Parser.SavePrisonProperties(path, properties, false);
+            ReincarceratedExport.instance.ConvertCmap(path, Path.GetDirectoryName(path));
+        }
         
-        MapManager.instance.SaveLevel();
-        
-        properties.Info.Custom = 2;
-        properties.Info.Rdy = 1;
-        properties.Info.Version = GenerateHexKey();
-        Parser.SavePrisonProperties(path, properties);
     }
     
     public static string GenerateHexKey()
@@ -323,7 +349,7 @@ public class MapProperties : MonoBehaviour
 
 public class Parser
 {
-    public static void SavePrisonProperties(string filePath, Properties properties)
+    public static void SavePrisonProperties(string filePath, Properties properties, bool encrypt)
     {
         StringBuilder sb = new();
 
@@ -347,7 +373,7 @@ public class Parser
                 }
             }
 
-            sb.AppendLine();
+            //sb.AppendLine();
         }
 
         // Info
@@ -362,7 +388,7 @@ public class Parser
                     sb.AppendLine($"{field.Name}={value}");
             }
 
-            sb.AppendLine();
+            //sb.AppendLine();
         }
 
         // Zones
@@ -382,7 +408,7 @@ public class Parser
                 }
             }
 
-            sb.AppendLine();
+            //sb.AppendLine();
         }
 
         if (properties.Perim != null)
@@ -405,7 +431,7 @@ public class Parser
                 sb.AppendLine($"{field.Name}={final}");
             }
 
-            sb.AppendLine();
+            //sb.AppendLine();
         }
 
         // Objects
@@ -419,7 +445,7 @@ public class Parser
                 sb.AppendLine($"{i + 1}={obj.Position.x.ToString(CultureInfo.InvariantCulture)}x{obj.Position.y.ToString(CultureInfo.InvariantCulture)}x{obj.Id}x{layer}");
             }
 
-            sb.AppendLine();
+            //sb.AppendLine();
         }
 
         // Tiles
@@ -461,10 +487,22 @@ public class Parser
                 sb.AppendLine($"{y}={row}");
             }
 
-            sb.AppendLine();
+            //sb.AppendLine();
         }
 
-        File.WriteAllText(filePath, sb.ToString());
+        if (encrypt)
+        {
+            string key = "mothking";
+            string plaintext = sb.ToString();
+            byte[] plainBytes = Encoding.ASCII.GetBytes(plaintext);
+            BlowfishCompat encryptionBlowfish = new BlowfishCompat(key);
+            byte[] encryptedBytes = encryptionBlowfish.Encrypt(plainBytes);
+            File.WriteAllBytes(filePath, encryptedBytes);
+        }
+        else
+        {
+            File.WriteAllText(filePath, sb.ToString());
+        }
     }
 
     public static void LoadPrisonData(string filePath, Properties properties)
@@ -680,7 +718,7 @@ public class Parser
                         continue;
                     }
 
-                    if (!int.TryParse(ids[x], out var id))
+                    if (!int.TryParse(ids[x].Replace("+", ""), out var id))
                     {
                         continue;
                     }
@@ -709,8 +747,8 @@ public class Parser
 [System.Serializable]
 public class Properties
 {
-    public Jobs Jobs;
     public Info Info;
+    public Jobs Jobs;
     public Zones Zones;
     public Perim Perim;
 

@@ -1,0 +1,3 @@
+[submodule "Assets/tools/chowdren-extractor"]
+	path = Assets/tools/chowdren-extractor
+	url = https://github.com/Priw8/chowdren-extractor.git

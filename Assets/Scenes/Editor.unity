@@ -16425,7 +16425,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 598422044}
   m_Direction: 2
   m_Value: 1
-  m_Size: 1
+  m_Size: 0.99999994
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -17739,7 +17739,7 @@ MonoBehaviour:
         m_Calls:
         - m_Target: {fileID: 1239554525}
           m_TargetAssemblyTypeName: TextureManagement, Assembly-CSharp
-          m_MethodName: ReloadTextures
+          m_MethodName: ReloadButton
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -20203,7 +20203,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Thank you for using EscEdit! To get started please add the\nDirectory
+  m_text: "Thank you for using EscEmapper! To get started please add the\nDirectory
     to your game folder in the field below. This folder\ncan be found through Steam
     by navigating to \nManage > Properties > Installed Files > Browse."
   m_isRightToLeft: 0
@@ -27745,7 +27745,7 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1295892242}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 0.000000059604645}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
@@ -71484,7 +71484,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: .json (Unsupported)
+  m_text: .cmap (custom)
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 26f1446935936f24ca040168c98a4e79, type: 2}
   m_sharedMaterial: {fileID: -780846068583184294, guid: 26f1446935936f24ca040168c98a4e79, type: 2}
@@ -101669,10 +101669,12 @@ MonoBehaviour:
   m_Placeholder: {fileID: 0}
   m_ItemText: {fileID: 1963024974}
   m_ItemImage: {fileID: 0}
-  m_Value: 1
+  m_Value: 0
   m_Options:
     m_Options:
-    - m_Text: .cmap / .map (TE1)
+    - m_Text: .cmap (custom)
+      m_Image: {fileID: 0}
+    - m_Text: .map (official)
       m_Image: {fileID: 0}
     - m_Text: .json (Unsupported)
       m_Image: {fileID: 0}

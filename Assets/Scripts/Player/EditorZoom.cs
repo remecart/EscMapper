@@ -52,7 +52,7 @@ public class EditorZoom : MonoBehaviour
             float size = Camera.main.orthographicSize;
             Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
-            float newSize = Mathf.Clamp(size - scroll * zoomSpeed, 4f, 54f);
+            float newSize = Mathf.Clamp(size - scroll * zoomSpeed, 4f, 65f);
             float zoomFactor = size / newSize;
 
             Vector3 direction = mouseWorldPos - Camera.main.transform.position;

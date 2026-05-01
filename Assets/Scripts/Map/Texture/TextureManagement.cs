@@ -142,6 +142,11 @@ public class TextureManagement : MonoBehaviour
         forceOpaque = opaque.isOn;
         ReloadTextures(MapProperties.instance.official);
     }
+    
+    public void ReloadButton()
+    {
+        ReloadTextures(MapProperties.instance.official);
+    }
 
     // ReSharper disable Unity.PerformanceAnalysis
     public void ReloadTextures(bool official)
@@ -383,7 +388,6 @@ public class TextureManagement : MonoBehaviour
             {
                 var rect = new Rect(x * tileRes, texture.height - (y + 1) * tileRes, tileRes, tileRes);
                 var pixels = texture.GetPixels((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
-
                 for (int i = 0; i < pixels.Length; i++)
                 {
                     if (pixels[i] == Color.white)
@@ -392,6 +396,11 @@ public class TextureManagement : MonoBehaviour
                     }
 
                     if (forceOpaque)
+                    {
+                        pixels[i].a = 1f;
+                    }
+
+                    if (pixels[i].r == 0 && pixels[i].g == 0 && pixels[i].b == 0)
                     {
                         pixels[i].a = 1f;
                     }
@@ -426,6 +435,11 @@ public class TextureManagement : MonoBehaviour
                         }
 
                         if (forceOpaque)
+                        {
+                            pixels[i].a = 1f;
+                        }
+                        
+                        if (pixels[i].r == 0 && pixels[i].g == 0 && pixels[i].b == 0)
                         {
                             pixels[i].a = 1f;
                         }

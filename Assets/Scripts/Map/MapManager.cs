@@ -142,33 +142,27 @@ public class MapManager : MonoBehaviour
             foreach (var tile in MapProperties.instance.properties.Tiles)
             {
                 if (tile.Layer < 0 || tile.Layer >= TileEditor.instance.currentTilemap.Count)
-                {
-                    Debug.LogWarning(
-                        $"[WARNING] MapManager.cs - Invalid layer of value {tile.Layer} discovered => Tile not loaded!");
                     continue;
-                }
 
-                if (tile.Id < 0 || tile.Id >= tiles.Count)
-                {
-                    Debug.LogWarning(
-                        $"[WARNING] MapManager.cs - Invalid ID of value {tile.Id} discovered => Tile not loaded!");
-                    continue;
-                }
+                int id = tile.Id;
 
-                var id = tile.Id;
-                
-                // For Shehelly
                 if (tile.Id > 100 && tile.Layer != 2)
                 {
                     id = (tile.Id - 100) * 2 + 100;
                 }
-                
                 else if (tile.Id > 50 && tile.Layer == 2)
                 {
                     id = (tile.Id - 50) * 2 - 1 + 100;
                 }
 
-                TileEditor.instance.currentTilemap[tile.Layer].SetTile((Vector3Int)tile.Position, tiles[id]);
+                if (id < 0 || id >= tiles.Count)
+                {
+                    Debug.LogWarning($"Invalid FINAL id {id} (original {tile.Id})");
+                    continue;
+                }
+
+                TileEditor.instance.currentTilemap[tile.Layer]
+                    .SetTile((Vector3Int)tile.Position, tiles[id]);
             }
         }
 

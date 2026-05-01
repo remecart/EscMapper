@@ -175,6 +175,7 @@ public class TileEditor : MonoBehaviour
                 selectedTileIndex = tile.id;
                 placementMode = true;
             }
+            TileSelection.instance.UpdateBox();
         }
 
         if (!placementMode) return;

@@ -130,8 +130,8 @@ public class MapProperties : MonoBehaviour
         dropdowns[0].value = dropdowns[0].options.FindIndex(opt => opt.text == properties.Info.RoutineSet);
         dropdowns[1].value = Mathf.Clamp(properties.Info.NPClvl - 1, 0, dropdowns[1].options.Count - 1);
         dropdowns[4].value = dropdowns[4].options.FindIndex(opt => opt.text == properties.Info.MapType);
-        dropdowns[6].value = Mathf.Clamp(properties.Info.Inmates, 0, dropdowns[6].options.Count - 1);
-        dropdowns[7].value = Mathf.Clamp(properties.Info.Guards, 0, dropdowns[7].options.Count - 1);
+        dropdowns[6].value = Mathf.Clamp(properties.Info.Inmates, 0, dropdowns[6].options.Count) - 5;
+        dropdowns[7].value = Mathf.Clamp(properties.Info.Guards, 0, dropdowns[7].options.Count) - 5;
 
         if (!official)
         {
@@ -293,16 +293,23 @@ public class MapProperties : MonoBehaviour
 
         if (exportType.value == 0)
         {
-            var path = "";
-            if (official) path = StandaloneFileBrowser.SaveFilePanel("Save Project", documentsPath, properties.Info.MapName, "map");
-            else path = StandaloneFileBrowser.SaveFilePanel("Save Project", documentsPath, properties.Info.MapName, "cmap");
+            var path = StandaloneFileBrowser.SaveFilePanel("Save Project", documentsPath, properties.Info.MapName, "cmap");
             MapManager.instance.SaveLevel();
             properties.Info.Custom = 2;
             properties.Info.Rdy = 1;
             properties.Info.Version = GenerateHexKey();
-            Parser.SavePrisonProperties(path, properties, official);
+            Parser.SavePrisonProperties(path, properties, false);
         }
-        else if (exportType.value == 1)
+        if (exportType.value == 1)
+        {
+            var path = StandaloneFileBrowser.SaveFilePanel("Save Project", documentsPath, properties.Info.MapName, "map");
+            MapManager.instance.SaveLevel();
+            properties.Info.Custom = 2;
+            properties.Info.Rdy = 1;
+            properties.Info.Version = GenerateHexKey();
+            Parser.SavePrisonProperties(path, properties, true);
+        }
+        else if (exportType.value == 2)
         {
             var path = StandaloneFileBrowser.SaveFilePanel("Save Project", documentsPath, properties.Info.MapName, "json");
             MapManager.instance.SaveLevel();
@@ -311,7 +318,7 @@ public class MapProperties : MonoBehaviour
             properties.Info.Version = GenerateHexKey();
             File.WriteAllText(path, JsonUtility.ToJson(properties, true));
         }
-        if (exportType.value == 2)
+        if (exportType.value == 3)
         {
             var path = StandaloneFileBrowser.SaveFilePanel("Save Project", documentsPath, properties.Info.MapName, "cmap");
             MapManager.instance.SaveLevel();

@@ -18,18 +18,6 @@ public class MapSettingsMenu : MonoBehaviour
     {
         instance = this;
     }
-
-    public void Update()
-    {
-        if (FolderPath.instance.Config == null) return;
-        if (ExitEditor.instance.UI.activeSelf) return;
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            ToggleMenu();
-            help = false;
-            helpMenu.SetActive(false);
-        }
-    }
     
     public void CloseHelpMenu()
     {

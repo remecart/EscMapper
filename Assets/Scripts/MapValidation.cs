@@ -61,8 +61,8 @@ public class MapValidation : MonoBehaviour
         if (GetObjectsOfType(1) + GetObjectsOfType(110) < properties.Info.Inmates - 1)
             LogError(count++,
                 $"Needs {properties.Info.Inmates - GetObjectsOfType(1) - GetObjectsOfType(110)} more prisoner beds!");
-        if (GetObjectsOfType(9) < properties.Info.Inmates)
-            LogError(count++, $"Needs {properties.Info.Inmates - GetObjectsOfType(9)} more prisoner desks!");
+        if (GetObjectsOfType(9) < properties.Info.Inmates - 1)
+            LogError(count++, $"Needs {properties.Info.Inmates - GetObjectsOfType(9) -1} more prisoner desks!");
 
         if (GetObjectsOfType(16) < properties.Info.Inmates - 1)
             LogError(count++,

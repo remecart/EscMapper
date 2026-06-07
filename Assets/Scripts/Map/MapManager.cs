@@ -12,6 +12,7 @@ public class MapManager : MonoBehaviour
     public int currentLayer;
 
     public List<CustomTile> tiles = new List<CustomTile>();
+    public List<ShadowTile> shadows = new List<ShadowTile>();
     public List<GameObject> Layers;
 
     public TextMeshProUGUI text;
@@ -76,14 +77,32 @@ public class MapManager : MonoBehaviour
             tile.tile = TextureManagement.instance.ReturnTile(i);
             tiles.Add(tile);
         }
+        
+        shadows.Clear();
+        for (int i = 0; i < TextureManagement.instance.loadedShadows.Count + 1; i++)
+        {
+            var shadow = ScriptableObject.CreateInstance<ShadowTile>();
+            shadow.id = i;
+            shadow.tile = TextureManagement.instance.ReturnShadow(i);
+            shadows.Add(shadow);
+        }
 
         // LoadLevel();
     }
 
     public void SaveLevel()
     {
-        MapProperties.instance.properties.Tiles.Clear();
-        MapProperties.instance.properties.Objects.Clear();
+        if (MapProperties.instance.properties.Tiles != null)
+        {
+            MapProperties.instance.properties.Tiles.Clear();
+        }
+        else MapProperties.instance.properties.Tiles = new List<Tiles>();
+
+        if (MapProperties.instance.properties.Objects != null)
+        {
+            MapProperties.instance.properties.Objects.Clear();
+        }
+        else MapProperties.instance.properties.Objects = new List<Objects>();
 
         for (var i = 0; i < TileEditor.instance.currentTilemap.Count; i++)
         {

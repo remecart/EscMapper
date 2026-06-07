@@ -71,6 +71,22 @@ public class TileEditor : MonoBehaviour
             StopActions();
             return;
         }
+        
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            if (Input.mouseScrollDelta.y != 0f)
+            {
+                int direction = Input.mouseScrollDelta.y > 0 ? 1 : -1;
+
+                selectedTileIndex = Mathf.Clamp(
+                    selectedTileIndex + direction,
+                    1,
+                    MapManager.instance.tiles.Count - 1
+                );
+
+                TileSelection.instance.UpdateBox();
+            }
+        }
 
         if (Input.GetMouseButtonUp(1) || tempPos != mousePos) tempPos = new Vector3Int(999, 999, 0);
         if (mousePos.x < 0 || mousePos.y > 0)

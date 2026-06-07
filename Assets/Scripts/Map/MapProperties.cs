@@ -23,6 +23,8 @@ public class MapProperties : MonoBehaviour
     public Properties properties;
     public Properties defaultProperties;
 
+    public List<TextMeshProUGUI> confirmation;
+
     public List<TMPro.TMP_Dropdown> dropdowns;
     public List<TMPro.TMP_InputField> inputfields;
     public List<Toggle> toggles;
@@ -347,7 +349,7 @@ public class MapProperties : MonoBehaviour
 
         return sb.ToString();
     }
-
+    
 }
 
 
@@ -509,6 +511,31 @@ public class Parser
         else
         {
             File.WriteAllText(filePath, sb.ToString());
+        }
+
+        var saved = false;
+        
+        if (!File.Exists(filePath))
+            saved = false;
+        else
+        {
+            DateTime lastWrite = File.GetLastWriteTime(filePath);
+            saved = (DateTime.Now - lastWrite).TotalSeconds <= 5f;
+        }
+        
+        MapProperties.instance.confirmation[0].transform.parent.gameObject.SetActive(true);
+        
+        if (!saved)
+        {
+            MapProperties.instance.confirmation[0].text = "Map saved successfully at\n" + filePath + "\n at " + File
+                .GetLastWriteTime(filePath) + ".";
+            MapProperties.instance.confirmation[1].color = Color.yellow;
+        }
+        else
+        {
+            MapProperties.instance.confirmation[0].text =
+                "Map could not be saved. Try\n- Using a different map name\n- Making a new file instead of replacing one\n- Exporting the map";
+            MapProperties.instance.confirmation[1].color = Color.red;
         }
     }
 

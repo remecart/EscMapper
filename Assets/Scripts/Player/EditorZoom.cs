@@ -47,7 +47,7 @@ public class EditorZoom : MonoBehaviour
 
         // --- ZOOM ---
         float scroll = Input.mouseScrollDelta.y;
-        if (scroll != 0)
+        if (scroll != 0 && !Input.GetKey(KeyCode.LeftShift))
         {
             float size = Camera.main.orthographicSize;
             Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);

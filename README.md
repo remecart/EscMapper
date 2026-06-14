@@ -9,11 +9,24 @@ EscMapper is an advanced quality of life map editor for The Escapists 1. It's me
 - Improved and responsive UI
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/remecart/EscMapper/main/Assets/Textures/Image1.png" width="45%">
-  <img src="https://raw.githubusercontent.com/remecart/EscMapper/main/Assets/Textures/Image2.png" width="45%">
+    <div style="display: inline-block; text-align: center; width: 45%;">
+    <img src="https://raw.githubusercontent.com/remecart/EscMapper/main/Assets/Textures/Image1.png" width="100%">
+    <p>"The Ice Chest" by BlakeTheBlock</p>
+  </div>
+  <div style="display: inline-block; text-align: center; width: 45%;">
+    <img src="https://raw.githubusercontent.com/remecart/EscMapper/main/Assets/Textures/Image2.png" width="100%">
+    <p>"New World Asylum" by Total Rapscallion</p>
+  </div>
 </p>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/remecart/EscMapper/main/Assets/Textures/Image3.png" width="45%">
-  <img src="https://raw.githubusercontent.com/remecart/EscMapper/main/Assets/Textures/Image4.png" width="45%">
+  <div style="display: inline-block; text-align: center; width: 45%;">
+    <img src="https://raw.githubusercontent.com/remecart/EscMapper/main/Assets/Textures/Image3.png" width="100%">
+    <p>"X-Mas X-Capade" by shellynote</p>
+  </div>
+
+  <div style="display: inline-block; text-align: center; width: 45%;">
+    <img src="https://raw.githubusercontent.com/remecart/EscMapper/main/Assets/Textures/Image4.png" width="100%">
+    <p>"Forgotten Camp" by shellynote</p>
+  </div>
 </p>

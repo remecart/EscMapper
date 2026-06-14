@@ -11,6 +11,7 @@ EscMapper is an advanced quality of life map editor for The Escapists 1. It's me
 - Access and place all object types, including hidden or special ones like Charlie and the Payphone.
 - See exactly how your map will look ingame (Ground texture is displayed correctly, Preview Shadows)
 - Improved and responsive UI
+- Support for .map and .gif en-/decrypting
   
 <table align="center">
   <tr>

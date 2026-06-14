@@ -77,7 +77,6 @@ public class MapManager : MonoBehaviour
             tile.tile = TextureManagement.instance.ReturnTile(i);
             tiles.Add(tile);
         }
-        
         shadows.Clear();
         for (int i = 0; i < TextureManagement.instance.loadedShadows.Count + 1; i++)
         {
@@ -86,7 +85,6 @@ public class MapManager : MonoBehaviour
             shadow.tile = TextureManagement.instance.ReturnShadow(i);
             shadows.Add(shadow);
         }
-
         // LoadLevel();
     }
 

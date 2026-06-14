@@ -22,6 +22,8 @@ public class FolderPath : MonoBehaviour
     public Toggle enableDebugText;
     public Toggle editorSounds;
     public Slider volume;
+    public ShadowManager shadowManager;
+    public Toggle shadowToggle;
     
     // Start is called before the first frame update
     void Start()
@@ -40,6 +42,8 @@ public class FolderPath : MonoBehaviour
             viewGrid.isOn = Config.viewGrid;
             cropGroundTex.isOn = Config.cropGround;
             previewTile.isOn = Config.previewTile;
+            shadowToggle.isOn = Config.renderShadows;
+            shadowManager.renderShadows = Config.renderShadows;
             
             // Check if the directory exists
             if (Config == null)
@@ -117,6 +121,7 @@ public class FolderPath : MonoBehaviour
         Config.enableDebug = enableDebugText.isOn;
         Config.forYeeeetr = MapProperties.instance.mapType.value;
         Config.volume = SoundManager.instance.volume;
+        Config.renderShadows = ShadowManager.instance.renderShadows;
         
         var documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         string savepath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "EscMapper", "config.json");
@@ -132,6 +137,7 @@ public class Config
     public bool cropGround = true;
     public bool previewTile = true;
     public bool enableDebug = true;
+    public bool renderShadows = true;
     public float volume = 0.5f;
     public int forYeeeetr = 0; // when he wants to save 2 clicks
 }

@@ -269,6 +269,7 @@ public class MapProperties : MonoBehaviour
         LoadUIFromProperties(properties.Info.Tileset);
         TextureManagement.instance.ReloadTextures(official);
         MapManager.instance.LoadLevel();
+        ShadowManager.instance.ReloadAllShadows();
         PropertiesUI();
         PerimeterVisualizer.instance.Visualize();
         loaded = true;
@@ -525,7 +526,7 @@ public class Parser
         
         MapProperties.instance.confirmation[0].transform.parent.gameObject.SetActive(true);
         
-        if (!saved)
+        if (saved)
         {
             MapProperties.instance.confirmation[0].text = "Map saved successfully at\n" + filePath + "\n at " + File
                 .GetLastWriteTime(filePath) + ".";

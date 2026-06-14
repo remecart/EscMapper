@@ -20,9 +20,9 @@ public class UndoRedoManager : MonoBehaviour
         instance = this;
     }
 
-    private float undoDelay = 0.5f; // delay before repeat starts
+    private float undoDelay = 0.5f;
     private float redoDelay = 0.5f;
-    private float undoRepeatRate = 0.05f; // repeat speed
+    private float undoRepeatRate = 0.05f;
     private float redoRepeatRate = 0.05f;
 
     private float undoTimer = 0f;
@@ -36,7 +36,6 @@ public class UndoRedoManager : MonoBehaviour
 
         if (ctrl)
         {
-            // Undo
             if (Input.GetKey(KeyCode.Z))
             {
                 if (!undoHeld)
@@ -55,12 +54,8 @@ public class UndoRedoManager : MonoBehaviour
                     }
                 }
             }
-            else
-            {
-                undoHeld = false;
-            }
+            else undoHeld = false;
 
-            // Redo
             if (Input.GetKey(KeyCode.Y))
             {
                 if (!redoHeld)
@@ -79,10 +74,7 @@ public class UndoRedoManager : MonoBehaviour
                     }
                 }
             }
-            else
-            {
-                redoHeld = false;
-            }
+            else redoHeld = false;
         }
         else
         {
@@ -91,7 +83,7 @@ public class UndoRedoManager : MonoBehaviour
         }
     }
 
-    public void SaveState(List<UndoEntry> batch) // 
+    public void SaveState(List<UndoEntry> batch)
     {
         undoBatch.Push(batch);
         redoBatch.Clear();
@@ -125,48 +117,16 @@ public class UndoRedoManager : MonoBehaviour
             }
             else
             {
-                GameObject obj = FindObjectAtPosition(entry.position, entry.layer);
-
-                if (obj != null)
-                {
-                    // Object exists — this was likely a placement, so we undo by destroying it
-                    var co = obj.GetComponent<CustomObject>();
-                    if (co != null)
-                    {
-                        redoGroup.Add(new UndoEntry {
-                            isTile = false,
-                            id = co.id,
-                            layer = entry.layer,
-                            position = obj.transform.position
-                        });
-                    }
-
-                    Destroy(obj);
-                }
-                else
-                {
-                    // Object doesn't exist — this was a deletion, so we undo by restoring it
-                    GameObject prefab = ObjectLookupTable.instance.objects[entry.id];
-                    GameObject go = Instantiate(prefab, entry.position, Quaternion.identity, ObjectEditor.instance.ObjectLayers[entry.layer].transform);
-
-                    var co = go.GetComponent<CustomObject>();
-                    go.transform.position = entry.position;
-                    go.GetComponent<SpriteRenderer>().sortingOrder = entry.layer * 50 + 25;
-
-                    redoGroup.Add(new UndoEntry {
-                        isTile = false,
-                        id = entry.id,
-                        layer = entry.layer,
-                        position = entry.position
-                    });
-                }
+                ApplyObjectState(entry, redoGroup);
             }
         }
+        
+        ShadowManager.instance.ReloadAllShadows();
 
         redoBatch.Push(redoGroup);
         SoundManager.instance.PlaySound("Undo");
     }
-    
+
     public void Redo()
     {
         if (redoBatch.Count == 0) return;
@@ -195,34 +155,72 @@ public class UndoRedoManager : MonoBehaviour
             }
             else
             {
-                GameObject prefab = ObjectLookupTable.instance.objects[entry.id];
-                GameObject go = Instantiate(prefab, entry.position, Quaternion.identity, ObjectEditor.instance.ObjectLayers[entry.layer].transform);
-
-                var co = go.GetComponent<CustomObject>();
-                go.transform.position = entry.position; // exact world position
-                go.GetComponent<SpriteRenderer>().sortingOrder = entry.layer * 50 + 25;
-
-                undoGroup.Add(new UndoEntry {
-                    isTile = false,
-                    id = entry.id,
-                    layer = entry.layer,
-                    position = entry.position
-                });
+                ApplyObjectState(entry, undoGroup);
             }
         }
+        
+        ShadowManager.instance.ReloadAllShadows();
 
         undoBatch.Push(undoGroup);
         SoundManager.instance.PlaySound("Redo");
     }
 
+    private void ApplyObjectState(UndoEntry entry, List<UndoEntry> oppositeGroup)
+    {
+        GameObject existing = FindObjectAtPosition(entry.position, entry.layer);
+
+        oppositeGroup.Add(new UndoEntry
+        {
+            isTile = false,
+            id = entry.id,
+            layer = entry.layer,
+            position = entry.position,
+            objectExistsAfter = existing != null
+        });
+
+        if (entry.objectExistsAfter)
+        {
+            if (existing == null)
+            {
+                CreateObject(entry);
+            }
+        }
+        else
+        {
+            if (existing != null)
+            {
+                Destroy(existing);
+            }
+        }
+    }
+
+    private void CreateObject(UndoEntry entry)
+    {
+        GameObject prefab = ObjectLookupTable.instance.objects[entry.id];
+
+        GameObject go = Instantiate(
+            prefab,
+            entry.position,
+            Quaternion.identity,
+            ObjectEditor.instance.ObjectLayers[entry.layer].transform);
+
+        go.transform.position = entry.position;
+
+        var sr = go.GetComponent<SpriteRenderer>();
+        if (sr != null)
+            sr.sortingOrder = entry.layer * 50 + 25;
+    }
+
     private GameObject FindObjectAtPosition(Vector3 position, int layer)
     {
         Transform layerTransform = ObjectEditor.instance.ObjectLayers[layer].transform;
+
         foreach (Transform child in layerTransform)
         {
             if (Vector3.Distance(child.position, position) < 0.5f)
                 return child.gameObject;
         }
+
         return null;
     }
 }
@@ -234,4 +232,6 @@ public class UndoEntry
     public Vector3 position;
     public int id;
     public int layer;
+
+    public bool objectExistsAfter;
 }

@@ -17,8 +17,8 @@ using UnityEngine.UI;
 public class TextureManagement : MonoBehaviour
 {
     public List<Texture2D> loadedTiles;
-    public List<Texture2D> shadowMaps;
     public List<Texture2D> loadedShadows;
+    public List<Texture2D> shadowMaps;
     public static TextureManagement instance;
     public Texture2D missingTile;
     public SpriteRenderer groundTexture;
@@ -463,45 +463,6 @@ public class TextureManagement : MonoBehaviour
     {
 //        texture.EncodeToPNG();
         var tileRes = 32;
-
-        // Inverted x/y forlooping for splitting the texture because TE1 does it :/
-        for (var x = 0; x < 4; x++)
-        {
-            for (var y = 0; y < 25; y++)
-            {
-                var rect = new Rect(x * tileRes, texture.height - (y + 1) * tileRes, tileRes, tileRes);
-                var pixels = texture.GetPixels((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
-
-                var tile = new Texture2D(tileRes, tileRes);
-                tile.filterMode = FilterMode.Point;
-                tile.SetPixels(pixels);
-                tile.Apply();
-
-                loadedShadows.Add(tile);
-            }
-        }
-
-        // For Shehelly LOL
-
-        if (texture.height > 800)
-        {
-            for (var y = 0; y < (texture.height - 800) / 32; y++)
-            {
-                for (var x = 0; x < 2; x++)
-                {
-                    var rect = new Rect(x * tileRes * 2 + 32, texture.height - (y + 1) * tileRes - 800, tileRes,
-                        tileRes);
-                    var pixels = texture.GetPixels((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
-
-                    var tile = new Texture2D(tileRes, tileRes);
-                    tile.filterMode = FilterMode.Point;
-                    tile.SetPixels(pixels);
-                    tile.Apply();
-
-                    loadedShadows.Add(tile);
-                }
-            }
-        }
     }
 
 
@@ -519,13 +480,12 @@ public class TextureManagement : MonoBehaviour
     
     public Texture2D ReturnShadow(int id)
     {
-        if (loadedShadows.Count == 0 || id == 0)
+        if (id < 0 || id >= loadedShadows.Count)
         {
             return missingTile;
         }
 
-        if (loadedShadows[id - 1]) return loadedShadows[id - 1];
-        return missingTile;
+        return loadedShadows[id] != null ? loadedShadows[id] : missingTile;
     }
 
     public void LoadObjectTexture()

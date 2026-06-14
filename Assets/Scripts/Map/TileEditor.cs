@@ -79,7 +79,7 @@ public class TileEditor : MonoBehaviour
                 int direction = Input.mouseScrollDelta.y > 0 ? 1 : -1;
 
                 selectedTileIndex = Mathf.Clamp(
-                    selectedTileIndex + direction,
+                    selectedTileIndex - direction,
                     1,
                     MapManager.instance.tiles.Count - 1
                 );
@@ -212,7 +212,7 @@ public class TileEditor : MonoBehaviour
                 PlaceTile(false);
             }
 
-            if (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButton(0)) PreviewArea.instance.AreaPreview(placeColor, startAreaPos);
+            if (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButton(0) && startAreaPos != new Vector3Int()) PreviewArea.instance.AreaPreview(placeColor, startAreaPos);
 
         }
     }
@@ -277,14 +277,17 @@ public class TileEditor : MonoBehaviour
                     layer = currentTilemapLayer,
                     position = pos
                 });
-
+                
                 var id = copiedIds[count] != -1 ? MapManager.instance.tiles[copiedIds[count]] : null;
                 currentTilemap[currentTilemapLayer].SetTile(pos, id);
 
                 count++;
+                
+                if (currentTilemapLayer == 1) ShadowManager.instance.UpdateShadowsAround(pos, 1);
             }
         }
         
+        UndoRedoManager.instance.SaveState(entries);
         SoundManager.instance.PlaySound("Paste");
         ObjectEditor.instance.AreaDeleteObject(new Vector3Int(pasteStartX, pasteStartY, 0), new Vector3Int(pasteStartX + width, pasteStartY + height, 0), entries, true);
     }
@@ -341,6 +344,9 @@ public class TileEditor : MonoBehaviour
                 {
                     currentTilemap[currentTilemapLayer].SetTile(pos, CurrentTile);
                 }
+                
+                                
+                if (currentTilemapLayer == 1) ShadowManager.instance.UpdateShadowsAround(pos, 1);
             }
         }
         
@@ -361,8 +367,7 @@ public class TileEditor : MonoBehaviour
     {
         var pos = mousePos;
         var tile = currentTilemap[currentTilemapLayer].GetTile(pos) as CustomTile;
-
-
+        
         if (!tile && delete) return;
         if (tile && tile.id == selectedTileIndex && !delete)
         {
@@ -395,6 +400,8 @@ public class TileEditor : MonoBehaviour
             currentTilemap[currentTilemapLayer].SetTile(pos, CurrentTile);
             SoundManager.instance.PlaySound("Place");
         }
+        
+        if (currentTilemapLayer == 1) ShadowManager.instance.UpdateShadowsAround(pos, 1);
     }
 
     public void ClearTiles()
@@ -417,5 +424,7 @@ public class TileEditor : MonoBehaviour
         
         currentTilemap[1].gameObject.SetActive(true);
         MapManager.instance.currentLayer = 1;
+        
+        ShadowManager.instance.ReloadAllShadows();
     }
 }

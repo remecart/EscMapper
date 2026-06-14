@@ -49,15 +49,17 @@ public class MapValidation : MonoBehaviour
         var properties = MapProperties.instance.properties;
 
         if (properties == null) return;
+        
+        Debug.Log($"awfjknjawf : {GetActiveJobs(properties)}");
 
         if (properties.Info.MapName == string.Empty) LogError(count++, "No map name!");
         if (properties.Info.Warden == string.Empty) LogError(count++, "No warden name!");
         if (properties.Info.Intro == string.Empty) LogError(count++, "No warden note!");
         if (GetActiveJobs(properties) < 3) LogError(count++, "Needs a minimum of three jobs!");
-        if (GetActiveJobs(properties) > properties.Info.Inmates - 1) LogError(count++, "Too many jobs!");
+        if (GetActiveJobs(properties) > properties.Info.Inmates) LogError(count++, "Too many jobs!");
 
         if (GetObjectsOfType(54) + GetObjectsOfType(111) != 1) LogError(count++, "Map needs ONE player bed!");
-        if (GetObjectsOfType(55) != 1) LogError(count++, "No player desk!");
+        if (GetObjectsOfType(55) == 0) LogError(count++, "No player desk!");
         if (GetObjectsOfType(1) + GetObjectsOfType(110) < properties.Info.Inmates - 1)
             LogError(count++,
                 $"Needs {properties.Info.Inmates - GetObjectsOfType(1) - GetObjectsOfType(110)} more prisoner beds!");
@@ -88,7 +90,7 @@ public class MapValidation : MonoBehaviour
         if (GetObjectsOfType(73) != 1) LogError(count++, $"Map should have ONE NPC employment waypoint!");
         if (GetObjectsOfType(94) != 1) LogError(count++, $"Map should have ONE NPC medic waypoint!");
 
-        if (GetObjectsOfType(56) < properties.Info.Guards)
+        if (GetObjectsOfType(56) < properties.Info.Guards -1)
             LogError(count++, $"Needs {properties.Info.Guards - GetObjectsOfType(56)} more guard beds!");
         if (GetObjectsOfType(19) == 0) LogError(count++, $"Needs NPC prisoner food collection waypoint!");
         if (GetObjectsOfType(59) == 0) LogError(count++, $"No solitary bed!");

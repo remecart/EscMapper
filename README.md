@@ -17,7 +17,7 @@ EscMapper is an advanced quality of life map editor for The Escapists 1. It's me
   <tr>
     <td align="center">
       <img src="https://raw.githubusercontent.com/remecart/EscMapper/main/Assets/Textures/Image1.png" width="300"><br>
-      <b>"The Ice Chest"</b><br>
+      <b>"The Ice Chest" by Icerecruit</b><br>
       BlakeTheBlock
     </td>
     <td align="center">
@@ -30,7 +30,7 @@ EscMapper is an advanced quality of life map editor for The Escapists 1. It's me
   <tr>
     <td align="center">
       <img src="https://raw.githubusercontent.com/remecart/EscMapper/main/Assets/Textures/Image3.png" width="300"><br>
-      <b>"X-Mas X-Capade"</b><br>
+      <b>""El Dorado""</b><br>
       shellynote
     </td>
     <td align="center">

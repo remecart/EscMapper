@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/remecart/EscMapper/main/Assets/Textures/EscMapperTitle.png" width="35%">
+  <img src="https://raw.githubusercontent.com/remecart/EscMapper/main/Assets/Textures/EscMapperTitle.png" width="55%">
   <sub>Art made by @MishaBring</sub>
 </p>
 

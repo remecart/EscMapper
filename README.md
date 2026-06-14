@@ -1,4 +1,4 @@
-<p>
+<p align="center">
   <img src="https://raw.githubusercontent.com/remecart/EscMapper/main/Assets/Textures/EscMapperTitle.png" width="35%"><br>
   <sub>Art made by @MishaBring</sub>
 </p>

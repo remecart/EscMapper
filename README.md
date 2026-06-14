@@ -8,4 +8,4 @@ EscMapper is an advanced quality of life map editor for The Escapists 1. It's me
 - See exactly how your map will look ingame (Ground texture is displayed correctly, Preview Shadows)
 - Improved and responsive UI
 
-- ![Screenshot](Assets/Textures/screenshot.png)
+![EscMapper](https://github.com/remecart/EscMapper/blob/main/Assets/Textures/Image1.png?raw=true)

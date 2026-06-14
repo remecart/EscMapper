@@ -3,6 +3,7 @@
   <b>Art made by @MishaBring</b><br>
 </p>
 
+
 EscMapper is an advanced quality of life map editor for The Escapists 1. It's meant to fix all the issues with the official and unofficial editor while also adding useful features.
 
 - Instantly hot reload textures within the editor

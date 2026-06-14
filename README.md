@@ -9,7 +9,7 @@ EscMapper is an advanced quality of life map editor for The Escapists 1. It's me
 - Improved and responsive UI
   
 <p align="center">
-  <img src="https://raw.githubusercontent.com/remecart/EscMapper/main/Assets/Textures/EscMapperTitleCard.png" width="45%">
+  <img src="https://raw.githubusercontent.com/remecart/EscMapper/main/Assets/Textures/EscMapperTitle.png" width="45%">
 </p>
 
 <table align="center">

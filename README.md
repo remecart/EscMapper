@@ -1,8 +1,7 @@
-<p align="center">
-  <img src="https://raw.githubusercontent.com/remecart/EscMapper/main/Assets/Textures/EscMapperTitle.png" width="45%">
-  <b>Art made by @MishaBring</b><br>
+<p>
+  <img src="https://raw.githubusercontent.com/remecart/EscMapper/main/Assets/Textures/EscMapperTitle.png" width="35%"><br>
+  <sub>Art made by @MishaBring</sub>
 </p>
-
 
 EscMapper is an advanced quality of life map editor for The Escapists 1. It's meant to fix all the issues with the official and unofficial editor while also adding useful features.
 

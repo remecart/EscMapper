@@ -135,6 +135,7 @@ public class TileProperties : MonoBehaviour
                 transform.GetChild(0).transform.GetChild(i).gameObject.name = perks[ConvertXtoY(i + 1, 4, 25) - 1];
             }
 
+            ShadowManager.instance.SetTileset(0);
             currentProperties = perks;
         }
 
@@ -146,6 +147,7 @@ public class TileProperties : MonoBehaviour
                     stalagflucht[ConvertXtoY(i + 1, 4, 25) - 1];
             }
             
+            ShadowManager.instance.SetTileset(1);
             currentProperties = stalagflucht;
         }
 
@@ -157,6 +159,7 @@ public class TileProperties : MonoBehaviour
                     shanktonstatepen[ConvertXtoY(i + 1, 4, 25) - 1];
             }
             
+            ShadowManager.instance.SetTileset(2);
             currentProperties = shanktonstatepen;
         }
         
@@ -167,6 +170,8 @@ public class TileProperties : MonoBehaviour
                 transform.GetChild(0).transform.GetChild(i).gameObject.name =
                     jungle[ConvertXtoY(i + 1, 4, 25) - 1];
             }
+            
+            ShadowManager.instance.SetTileset(3);
             currentProperties = jungle;
         }
         
@@ -177,6 +182,8 @@ public class TileProperties : MonoBehaviour
                 transform.GetChild(0).transform.GetChild(i).gameObject.name =
                     sanpancho[ConvertXtoY(i + 1, 4, 25) - 1];
             }
+            
+            ShadowManager.instance.SetTileset(4);
             currentProperties = sanpancho;
         }
         
@@ -187,8 +194,12 @@ public class TileProperties : MonoBehaviour
                 transform.GetChild(0).transform.GetChild(i).gameObject.name =
                     irongate[ConvertXtoY(i + 1, 4, 25) - 1];
             }
+
+            ShadowManager.instance.SetTileset(5);
             currentProperties = irongate;
         }
+        
+        ShadowManager.instance.ReloadAllShadows();
     }
 
     public int ConvertXtoY(int id, int width, int height)

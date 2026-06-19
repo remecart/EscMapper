@@ -228,7 +228,7 @@ public class TextureManagement : MonoBehaviour
                    data[5] == 'a';
         }
 
-        Texture2D texture = new Texture2D(2, 2);
+        Texture2D texture;
 
         if (IsGif(fileBytes))
         {
@@ -236,13 +236,26 @@ public class TextureManagement : MonoBehaviour
         }
         else
         {
+            texture = new Texture2D(2, 2);
             texture.LoadImage(fileBytes);
         }
 
-        if (FolderPath.instance.cropGroundTex.isOn) texture = CropTexture(texture, 1728, 1728);
-
+        if (FolderPath.instance.cropGroundTex.isOn)
+        {
+            var cropped = CropTexture(texture, 1728, 1728);
+            Destroy(texture);
+            texture = cropped;
+        }
 
         texture.filterMode = FilterMode.Point;
+
+        if (groundTexture.sprite != null)
+        {
+            var oldTex = groundTexture.sprite.texture;
+            Destroy(groundTexture.sprite);
+            Destroy(oldTex);
+        }
+
         groundTexture.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
             new Vector2(0, 1), 16);
 
@@ -260,10 +273,19 @@ public class TextureManagement : MonoBehaviour
             yield break;
         }
 
-        var texture = LoadFirstGifFrame(File.ReadAllBytes(fullPath));
-        texture = CropTexture(texture, 1728, 1728);
+        var rawTexture = LoadFirstGifFrame(File.ReadAllBytes(fullPath));
+        var texture = CropTexture(rawTexture, 1728, 1728);
+        Destroy(rawTexture);
 
         texture.filterMode = FilterMode.Point;
+
+        if (undergroundTexture.sprite != null)
+        {
+            var oldTex = undergroundTexture.sprite.texture;
+            Destroy(undergroundTexture.sprite);
+            Destroy(oldTex);
+        }
+
         undergroundTexture.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
             new Vector2(0, 1), 16);
     }
@@ -297,9 +319,16 @@ public class TextureManagement : MonoBehaviour
     }
 
 
+    private void DestroyLoadedTiles()
+    {
+        foreach (var t in loadedTiles)
+            if (t != null && t != missingTile) Destroy(t);
+        loadedTiles.Clear();
+    }
+
     private IEnumerator LoadTileset(string tileset, string path)
     {
-        loadedTiles.Clear();
+        DestroyLoadedTiles();
         var cus = MapProperties.instance.official ? "" : "_cus";
         var gifFile = $"tiles{cus}_{tileset}.gif";
         var pngFile = $"tiles{cus}_{tileset}.png";
@@ -307,7 +336,7 @@ public class TextureManagement : MonoBehaviour
         if (!File.Exists(Path.Combine(path, gifFile)) && !File.Exists(Path.Combine(path, pngFile)))
         {
             Debug.LogError($"[WARNING] TextureManagement.cs - {Path.Combine(path, gifFile)} does not exist!");
-            loadedTiles.Clear();
+            DestroyLoadedTiles();
             for (int i = 0; i < 101; i++)
             {
                 loadedTiles.Add(missingTile);
@@ -340,7 +369,7 @@ public class TextureManagement : MonoBehaviour
                        data[5] == 'a';
             }
 
-            Texture2D texture = new Texture2D(2, 2);
+            Texture2D texture;
 
             if (IsGif(fileBytes))
             {
@@ -348,6 +377,7 @@ public class TextureManagement : MonoBehaviour
             }
             else
             {
+                texture = new Texture2D(2, 2);
                 texture.LoadImage(fileBytes);
             }
 

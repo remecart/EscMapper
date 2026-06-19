@@ -39,10 +39,10 @@ public class FolderPath : MonoBehaviour
             string raw = File.ReadAllText(configPath);
             Config = JsonUtility.FromJson<Config>(raw);
 
-            viewGrid.isOn = Config.viewGrid;
-            cropGroundTex.isOn = Config.cropGround;
-            previewTile.isOn = Config.previewTile;
-            shadowToggle.isOn = Config.renderShadows;
+            viewGrid.SetIsOnWithoutNotify(Config.viewGrid);
+            cropGroundTex.SetIsOnWithoutNotify(Config.cropGround);
+            previewTile.SetIsOnWithoutNotify(Config.previewTile);
+            shadowToggle.SetIsOnWithoutNotify(Config.renderShadows);
             shadowManager.renderShadows = Config.renderShadows;
             
             // Check if the directory exists

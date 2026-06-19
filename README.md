@@ -30,8 +30,8 @@ EscMapper is an advanced quality of life map editor for The Escapists 1. It's me
   <tr>
     <td align="center">
       <img src="https://raw.githubusercontent.com/remecart/EscMapper/main/Assets/Textures/Image3.png" width="300"><br>
-      <b>"X-Mas X-Capade"</b><br>
-      shellynote
+      <b>"El Dorado"</b><br>
+      Icerecruit
     </td>
     <td align="center">
       <img src="https://raw.githubusercontent.com/remecart/EscMapper/main/Assets/Textures/Image4.png" width="300"><br>

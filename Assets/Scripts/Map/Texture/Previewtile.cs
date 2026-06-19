@@ -76,7 +76,7 @@ public class Previewtile : MonoBehaviour
                 _cachedObjectTexture = texture;
                 _lastObjectIndex = objectIndex;
                 _lastPlacementMode = false;
-            }
+            } 
 
             var selectedCo = ObjectLookupTable.instance.objects[objectIndex].GetComponent<CustomObject>();
             float.TryParse(ObjectEditor.instance.OffsetX.text, out float parsedX);
@@ -89,13 +89,13 @@ public class Previewtile : MonoBehaviour
     {
         if (spriteRenderer.sprite != null)
         {
-            Destroy(spriteRenderer.sprite);
+            DestroyImmediate(spriteRenderer.sprite);
             spriteRenderer.sprite = null;
         }
 
         if (destroyTexture && _cachedObjectTexture != null)
         {
-            Destroy(_cachedObjectTexture);
+            DestroyImmediate(_cachedObjectTexture);
             _cachedObjectTexture = null;
         }
     }

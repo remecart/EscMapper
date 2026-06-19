@@ -26,6 +26,10 @@ public class TextureManagement : MonoBehaviour
     public Texture2D objectTexture;
     public TMP_Dropdown grounds;
 
+    // Track whether we own the current ground/underground sprites (i.e. we created them at runtime)
+    private bool _ownsGroundSprite = false;
+    private bool _ownsUndergroundSprite = false;
+
     void Start()
     {
         instance = this;
@@ -242,22 +246,25 @@ public class TextureManagement : MonoBehaviour
 
         if (FolderPath.instance.cropGroundTex.isOn)
         {
-            var cropped = CropTexture(texture, 1728, 1728);
-            Destroy(texture);
-            texture = cropped;
+            var uncropped = texture;
+            texture = CropTexture(uncropped, 1728, 1728);
+            DestroyImmediate(uncropped);
         }
 
         texture.filterMode = FilterMode.Point;
 
-        if (groundTexture.sprite != null)
+        if (_ownsGroundSprite && groundTexture.sprite != null)
         {
-            var oldTex = groundTexture.sprite.texture;
-            Destroy(groundTexture.sprite);
-            Destroy(oldTex);
+            var oldSprite = groundTexture.sprite;
+            var oldTex = oldSprite.texture;
+            groundTexture.sprite = null;
+            DestroyImmediate(oldSprite);
+            DestroyImmediate(oldTex);
         }
 
         groundTexture.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
             new Vector2(0, 1), 16);
+        _ownsGroundSprite = true;
 
         var size = new Vector2(texture.width / 16f, texture.height / 16f);
     }
@@ -275,19 +282,24 @@ public class TextureManagement : MonoBehaviour
 
         var rawTexture = LoadFirstGifFrame(File.ReadAllBytes(fullPath));
         var texture = CropTexture(rawTexture, 1728, 1728);
-        Destroy(rawTexture);
+        var toDestroy = rawTexture;
+        rawTexture = null;
+        DestroyImmediate(toDestroy);
 
         texture.filterMode = FilterMode.Point;
 
-        if (undergroundTexture.sprite != null)
+        if (_ownsUndergroundSprite && undergroundTexture.sprite != null)
         {
-            var oldTex = undergroundTexture.sprite.texture;
-            Destroy(undergroundTexture.sprite);
-            Destroy(oldTex);
+            var oldSprite = undergroundTexture.sprite;
+            var oldTex = oldSprite.texture;
+            undergroundTexture.sprite = null;
+            DestroyImmediate(oldSprite);
+            DestroyImmediate(oldTex);
         }
 
         undergroundTexture.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
             new Vector2(0, 1), 16);
+        _ownsUndergroundSprite = true;
     }
 
     Texture2D LoadFirstGifFrame(byte[] gifBytes)
@@ -322,7 +334,7 @@ public class TextureManagement : MonoBehaviour
     private void DestroyLoadedTiles()
     {
         foreach (var t in loadedTiles)
-            if (t != null && t != missingTile) Destroy(t);
+            if (t != null && t != missingTile) DestroyImmediate(t);
         loadedTiles.Clear();
     }
 
